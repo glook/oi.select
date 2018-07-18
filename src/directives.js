@@ -123,11 +123,6 @@ angular.module('oi.select')
                     });
                 }
 
-                if (angular.isDefined(attrs.readonly)) {
-                    var readOnlyValue = attrs.readonly.length === 0 || attrs.readonly !== 'true' ;
-                    inputElement.attr('readonly', readOnlyValue)
-                }
-
                 if (angular.isDefined(attrs.tabindex)) {
                     inputElement.attr('tabindex', attrs.tabindex);
                     element[0].removeAttribute('tabindex');
@@ -254,6 +249,14 @@ angular.module('oi.select')
                     $animate[isLoading ? 'addClass' : 'removeClass'](element, 'loading', !isOldAngular && {
                         tempClasses: 'loading-animate'
                     });
+                });
+
+                scope.$parent.$watch(attrs.readonly, function (value) {
+                    if (value === undefined) {
+                        value = true;
+                    }
+                    inputElement.attr('readonly', value);
+
                 });
 
                 scope.addItem = function addItem(option) {

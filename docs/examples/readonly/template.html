@@ -10,42 +10,57 @@
                     readonly
                     placeholder="Select"
             ></oi-select>
-        </div>
-    </div>
+            <div hljs>
+                oi-options="item for item in shopArrShort"
+                ng-model="bundle"
+                readonly
+            </div>
 
-    <h5>Readonly=false</h5>
+        </div>
+
+        <div class="col-md-4">
+            <pre>{{bundle}}</pre>
+        </div>
+    </div>
+    <hr>
+    <p>Passing variable to readonly attribute</p>
+    <div class="row">
+        <div class="col-md-5">
+            <div class="well well-sm">
+                <strong>$scope.readOnly</strong> = {{readOnly}};
+            </div>
+        </div>
+        <div class="col-md-7">
+            <button class="btn btn-primary" ng-click="toggleReadOnly()">Toggle readOnly param</button>
+        </div>
+    </div>
     <div class="row">
         <div class="col-md-8">
             <oi-select
                     oi-options="item for item in shopArrShort"
-                    ng-model="bundle"
+                    ng-model="bundleExample2"
                     multiple
-                    readonly="false"
+                    readonly="readOnly"
                     placeholder="Select"
             ></oi-select>
-        </div>
-    </div>
-    <h5>Readonly=true</h5>
-    <div class="row">
-        <div class="col-md-8">
-            <oi-select
-                    oi-options="item for item in shopArrShort"
-                    ng-model="bundle"
-                    multiple
-                    readonly="true"
-                    placeholder="Select"
-            ></oi-select>
-        </div>
-    </div>
-    <div class="row">
-        <div hljs class="col-md-8">
-            oi-options="item for item in shopArrShort"
-            ng-model="bundle"
-            readonly
+
+            <div hljs>
+                oi-options="item for item in shopArrShort"
+                ng-model="bundle"
+                readonly="someVariable"
+            </div>
+            <div class="alert alert-info">
+                <i class="glyphicon glyphicon-info-sign" style="margin-right: 7px;"></i>You can also pass a <strong>readonly="true"</strong>
+                or <strong>readonly="false"</strong> to enable/disable editing of input field.
+            </div>
         </div>
         <div class="col-md-4"><pre>
-{{bundle}}
+{{bundleExample2}}
 </pre>
         </div>
+    </div>
+    <div class="row">
+
+
     </div>
 </div>
