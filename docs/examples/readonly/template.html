@@ -4,23 +4,48 @@
     <div class="row">
         <div class="col-md-8">
             <oi-select
-                oi-options="item for item in shopArrShort"
-                ng-model="bundle"
-                multiple
-                readonly
-                placeholder="Select"
-                ></oi-select>
+                    oi-options="item for item in shopArrShort"
+                    ng-model="bundle"
+                    multiple
+                    readonly
+                    placeholder="Select"
+            ></oi-select>
         </div>
     </div>
 
-<div class="row">
-<div hljs class="col-md-8">
-oi-options="item for item in shopArrShort"
-ng-model="bundle"
-readonly
-</div>
-<div class="col-md-4"><pre>
+    <h5>Readonly=false</h5>
+    <div class="row">
+        <div class="col-md-8">
+            <oi-select
+                    oi-options="item for item in shopArrShort"
+                    ng-model="bundle"
+                    multiple
+                    readonly="false"
+                    placeholder="Select"
+            ></oi-select>
+        </div>
+    </div>
+    <h5>Readonly=true</h5>
+    <div class="row">
+        <div class="col-md-8">
+            <oi-select
+                    oi-options="item for item in shopArrShort"
+                    ng-model="bundle"
+                    multiple
+                    readonly="true"
+                    placeholder="Select"
+            ></oi-select>
+        </div>
+    </div>
+    <div class="row">
+        <div hljs class="col-md-8">
+            oi-options="item for item in shopArrShort"
+            ng-model="bundle"
+            readonly
+        </div>
+        <div class="col-md-4"><pre>
 {{bundle}}
-</pre></div>
-</div>
+</pre>
+        </div>
+    </div>
 </div>

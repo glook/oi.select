@@ -124,7 +124,8 @@ angular.module('oi.select')
                 }
 
                 if (angular.isDefined(attrs.readonly)) {
-                    inputElement.attr('readonly', true)
+                    var readOnlyValue = attrs.readonly.length === 0 || attrs.readonly !== 'true' ;
+                    inputElement.attr('readonly', readOnlyValue)
                 }
 
                 if (angular.isDefined(attrs.tabindex)) {
@@ -205,7 +206,7 @@ angular.module('oi.select')
 
                     //length less then minlength
                     if (String(inputValue).length < options.minlength) return;
-                    
+
                     //We don't get matches if nothing added into matches list
                     if (inputValue !== oldValue && (!scope.oldQuery || inputValue) && !matchesWereReset) {
                         listElement[0].scrollTop = 0;
@@ -473,7 +474,7 @@ angular.module('oi.select')
                 function click(event) {
                     //query length less then minlength
                     if (scope.query.length < options.minlength) return;
-                    
+
                     //option is disabled
                     if (oiUtils.contains(element[0], event.target, 'disabled')) return;
 
