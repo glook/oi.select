@@ -253,14 +253,58 @@ angular.module('oi.select')
                         });
                     });
 
-                    scope.$parent.$watch(attrs.readonly, function (value) {
-                        if (value === undefined) {
-                            value = true;
+
+                    if (angular.isDefined(attrs.readonly)) {
+                        scope.$parent.$watch(attrs.readonly, function (value) {
+                            if (value === undefined) {
+                                value = true;
+                            }
+                            inputElement.attr('readonly', value);
+
+                        });
+                    }
+
+                    scope.$parent.$watch(attrs.oiSelectOptions, function (value) {
+                        options = angular.extend({cleanModel: elementOptions.newItem === 'prompt'}, oiSelect.options, value);
+                        editItem = options.editItem;
+                        editItemIsCorrected = editItem === 'correct';
+                        waitTime = 0;
+
+                        if (editItem === true || editItem === 'correct') {
+                            editItem = 'oiSelectEditItem';
                         }
-                        inputElement.attr('readonly', value);
 
-                    });
+                        if (editItem === true || editItem === 'correct') {
+                            editItem = 'oiSelectEditItem';
+                        }
+                        editItemFn = editItem ? $injector.get(editItem) : angular.noop;
+                        removeItemFn = $parse(options.removeItemFn);
 
+                        match = options.searchFilter.split(':');
+                        searchFilter = $filter(match[0]);
+                        searchFilterOptionsFn = $parse(match[1]);
+
+                        match = options.dropdownFilter.split(':');
+                        dropdownFilter = $filter(match[0]);
+                        dropdownFilterOptionsFn = $parse(match[1]);
+
+                        match = options.listFilter.split(':');
+                        listFilter = $filter(match[0]);
+                        listFilterOptionsFn = $parse(match[1]);
+
+                        match = options.groupFilter.split(':');
+                        groupFilter = $filter(match[0]);
+                        groupFilterOptionsFn = $parse(match[1]);
+
+                        if (options.newItemFn) {
+                            newItemFn = $parse(options.newItemFn);
+                        } else {
+                            newItemFn = function (scope, locals) {
+                                return (optionsFn(locals) || {}).newItemModel || locals.$query;
+                            };
+                        }
+                    }, true);
+                    //
 
                     scope.addItem = function addItem(option) {
                         lastQuery = scope.query;

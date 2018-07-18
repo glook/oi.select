@@ -1,0 +1,32 @@
+<div ng-controller="selectUpdateoptionsController">
+    <h2>Updating oi-select-options from controller</h2>
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="well well-sm">
+                <strong>$scope.oiSelectOptions</strong> = {{oiSelectOptions | json}}
+            </div>
+        </div>
+        <div class="col-md-7">
+            <button class="btn btn-primary" ng-click="toggleOptions()">Toggle editItem param</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <oi-select
+                    oi-options="item for item in shopArrShort"
+                    ng-model="bundle"
+                    placeholder="Select"
+                    oi-select-options="oiSelectOptions"
+            ></oi-select>
+        </div>
+        <div class="col-md-4"><pre>
+{{bundle}}
+</pre>
+        </div>
+    </div>
+    <div class="row">
+
+
+    </div>
+</div>
