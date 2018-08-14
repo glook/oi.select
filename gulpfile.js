@@ -1,27 +1,28 @@
-var path          = require('path');
-var del           = require('del');
-var series        = require('stream-series');
-var gulp          = require('gulp');
-var rename        = require('gulp-rename');
-var concat        = require('gulp-concat');
-var webserver     = require('gulp-webserver');
+var path = require('path');
+var del = require('del');
+var series = require('stream-series');
+var gulp = require('gulp');
+var rename = require('gulp-rename');
+var concat = require('gulp-concat');
+var webserver = require('gulp-webserver');
 var templateCache = require('gulp-angular-templatecache');
-var minifyCss     = require('gulp-minify-css');
-var minifyHtml    = require('gulp-minify-html');
-var uglify        = require('gulp-uglify');
-var stylus        = require('gulp-stylus');
-var KarmaServer   = require('karma').Server;
-var autoprefixer  = require('autoprefixer-stylus')({
+var minifyCss = require('gulp-minify-css');
+var minifyHtml = require('gulp-minify-html');
+var uglify = require('gulp-uglify-es').default;
+var stylus = require('gulp-stylus');
+var KarmaServer = require('karma').Server;
+var autoprefixer = require('autoprefixer-stylus')({
     browsers: ["ff >= 20", "chrome >= 35", "safari >= 7", "ios >= 7", "android >= 4", "opera >= 12.1", "ie >= 10"]
 });
+var babel = require('gulp-babel');
 
 var paths = {
-    root:     __dirname,
-    src:      path.join(__dirname, '/src'),
-    dist:     path.join(__dirname, '/dist')
+    root: __dirname,
+    src: path.join(__dirname, '/src'),
+    dist: path.join(__dirname, '/dist')
 };
 
-gulp.task('webserver', function() {
+gulp.task('webserver', function () {
     return gulp.src(paths.root)
         .pipe(webserver({
             host: 'localhost',
@@ -31,12 +32,12 @@ gulp.task('webserver', function() {
         }));
 });
 
-gulp.task('clean', function() {
+gulp.task('clean', function () {
     del.sync(paths.dist);
 });
 
-gulp.task('compileStyles', function() {
-    return gulp.src(path.join(paths.src, 'style.styl'))
+gulp.task('compileStyles', function () {
+    return gulp.src(path.join(paths.src, 'style.scss'))
         .pipe(stylus({
             use: autoprefixer
         }))
@@ -47,7 +48,7 @@ gulp.task('compileStyles', function() {
         .pipe(gulp.dest(paths.dist))
 });
 
-gulp.task('compileScripts', function() {
+gulp.task('compileScripts', function () {
     var templateStream = gulp.src(path.join(paths.src, 'template.html'))
         .pipe(minifyHtml())
         .pipe(templateCache({
@@ -56,11 +57,14 @@ gulp.task('compileScripts', function() {
         }));
 
     var scriptStream = gulp.src([
-        path.join(paths.src, 'module.js'),
-        path.join(paths.src, 'services.js'),
-        path.join(paths.src, 'directives.js'),
-        path.join(paths.src, 'filters.js')
-    ]);
+            path.join(paths.src, 'module.js'),
+            path.join(paths.src, 'utils.js'),
+
+            path.join(paths.src, 'services.js'),
+            path.join(paths.src, 'directives.js'),
+            path.join(paths.src, 'filters.js')
+        ])
+            .pipe(babel());
 
     scriptStream
         .pipe(concat('select.js'))
@@ -77,11 +81,11 @@ gulp.task('compileScripts', function() {
         .pipe(gulp.dest(paths.dist));
 });
 
-gulp.task('watch', function() {
-    gulp.watch(path.join(paths.src, '**/*.styl'), ['compileStyles']);
+gulp.task('watch', function () {
+    gulp.watch(path.join(paths.src, '**/*.scss'), ['compileStyles']);
 });
 
-gulp.task('test', function(done) {
+gulp.task('test', function (done) {
     new KarmaServer({
         configFile: path.join(paths.root, 'karma.conf.js')
     }, done).start();
