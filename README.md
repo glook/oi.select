@@ -1,6 +1,6 @@
 #oi.select — AngularJS directive of select element
 
-**[Download 0.2.21](https://github.com/tamtakoe/oi.select/tree/master/dist)**
+**[Download 0.3.0](https://github.com/tamtakoe/glook/tree/master/dist)**
 
 ## Features
 
@@ -13,7 +13,7 @@
 
 ## Demo
 
-Do you want to see module in action? Visit [tamtakoe.github.io/oi.select](//tamtakoe.github.io/oi.select/) or try [playground](http://plnkr.co/edit/LnntLUdrAfz0DDlCGtGv?p=preview)
+Do you want to see module in action? Visit [tamtakoe.github.io/oi.select/](//tamtakoe.github.io/oi.select/) or try [playground](http://plnkr.co/edit/LnntLUdrAfz0DDlCGtGv?p=preview)
 
 
 ## Installation
