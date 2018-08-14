@@ -40,7 +40,6 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
             {urlName: 'lazyloading', name: 'Lazy loading'},
             {urlName: 'disabled', name: 'Disabled'},
             {urlName: 'disabledoptions', name: 'Disabled options'},
-            {urlName: 'readonly', name: 'Read only'},
             {urlName: 'cleanmodel', name: 'Clean model'},
             {urlName: 'multiplelimit', name: 'Multiple limit'},
             {urlName: 'createitems', name: 'Create items'},
@@ -51,7 +50,9 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
             {urlName: 'customization', name: 'Customization'},
             {urlName: 'validation', name: 'Validation'},
             {urlName: 'translate', name: 'Translate'},
-            {urlName: 'updateoptions', name: 'Updating options'},
+            {urlName: 'readonly', name: 'Read only', isNew: true},
+            {urlName: 'updateoptions', name: 'Updating options', isNew: true},
+            {urlName: 'infiniteScroll', name: 'Infinite scroll', isNew: true},
             {urlName: 'funny', name: 'Funny'},
             {urlName: 'all', name: 'All'}
         ];

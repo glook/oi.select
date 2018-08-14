@@ -15,11 +15,13 @@
         display: -ms-flexbox;
         display: flex;
     }
+
     .menu {
         -webkit-flex-shrink: 0;
         -ms-flex-negative: 0;
         flex-shrink: 0;
     }
+
     .content {
         margin-left: 30px;
     }
@@ -29,11 +31,13 @@
             width: 518px;
         }
     }
+
     @media (min-width: 992px) {
         .content {
             width: 742px;
         }
     }
+
     @media (min-width: 1200px) {
         .content {
             width: 950px;
@@ -52,7 +56,9 @@
             <a ng-repeat="item in demo.menu"
                href="#/select/#{{item.urlName}}"
                class="list-group-item capitalize"
-               ng-class="{active: item.urlName == demo.name}">{{item.name}}</a>
+               ng-class="{active: item.urlName == demo.name}">
+                <i ng-if="item.isNew" class="glyphicon glyphicon-asterisk" style="font-size: 12px;"></i>
+                {{item.name}}</a>
         </div>
         <div class="content">
             <div ng-include="demo.viewUrl"></div>

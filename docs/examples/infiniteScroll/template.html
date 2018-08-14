@@ -1,0 +1,37 @@
+<div ng-controller="infiniteScrollController">
+    <h2>Infinite Scroll</h2>
+    <p>Now you can pass <strong>oi-options</strong> attribute from your controller or pass it as string</p>
+    <p>If you want to turn on infinite scroll you need to pass <strong>$page</strong> attribute to your callback
+        function</p>
+    <div class="row">
+        <div class="col-md-8">
+            <oi-select
+                    oi-options="oiOptions"
+                    throttle="560"
+                    threshold="42"
+                    ng-model="bundle"
+                    placeholder="Select"
+            ></oi-select>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div hljs>
+                $scope.oiOptions = 'item.name for item in get($query,$page) track by item.id';
+            </div>
+
+            <div hljs>
+                oi-options="oiOptions"
+                throttle="560"
+                threshold="42"
+                ng-model="bundle"
+                placeholder="Select"
+            </div>
+        </div>
+        <div class="col-md-4"><pre>
+{{bundle}}
+</pre>
+        </div>
+    </div>
+</div>
