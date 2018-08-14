@@ -1,11 +1,12 @@
 {
     "name": "oi.select",
     "license": "MIT",
-    "version": "0.2.22",
+    "version": "0.3.0",
     "repository": {
         "type": "git",
-        "url": "git://github.com/tamtakoe/oi.select.git"
+        "url": "git://github.com/glook/oi.select.git"
     },
+    "homepage": "https://github.com/glook/oi.select",
     "devDependencies": {
         "autoprefixer-stylus": "0.14.0",
         "babel-core": "^6.26.3",
@@ -40,6 +41,7 @@
     },
     "browser": "index.js",
     "style": "dist/select.min.css",
+    "main": "dist/select-tpls.js",
     "peerDependencies": {
         "angular": ">=1.2",
         "angular-sanitize": ">=1.2"
