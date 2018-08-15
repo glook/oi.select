@@ -57,14 +57,12 @@ gulp.task('compileScripts', function () {
         }));
 
     var scriptStream = gulp.src([
-            path.join(paths.src, 'module.js'),
-            path.join(paths.src, 'utils.js'),
-
-            path.join(paths.src, 'services.js'),
-            path.join(paths.src, 'directives.js'),
-            path.join(paths.src, 'filters.js')
-        ])
-            .pipe(babel());
+        path.join(paths.src, 'module.js'),
+        path.join(paths.src, 'utils.js'),
+        path.join(paths.src, 'services.js'),
+        path.join(paths.src, 'directives.js'),
+        path.join(paths.src, 'filters.js')
+    ]).pipe(babel());
 
     scriptStream
         .pipe(concat('select.js'))
@@ -83,6 +81,25 @@ gulp.task('compileScripts', function () {
 
 gulp.task('watch', function () {
     gulp.watch(path.join(paths.src, '**/*.scss'), ['compileStyles']);
+    gulp.watch(path.join(paths.src, '**/*.js'), function () {
+        var modulePath = gulp.src([
+            path.join(paths.src, 'module.js'),
+            path.join(paths.src, 'utils.js'),
+            path.join(paths.src, 'services.js'),
+            path.join(paths.src, 'directives.js'),
+            path.join(paths.src, 'filters.js')
+        ]).pipe(babel());
+
+        var templateStream = gulp.src(path.join(paths.src, 'template.html'))
+            .pipe(minifyHtml())
+            .pipe(templateCache({
+                module: 'oi.select',
+                root: 'src/'
+            }));
+        series(modulePath, templateStream)
+            .pipe(concat('select-tpls.js'))
+            .pipe(gulp.dest(paths.dist));
+    });
 });
 
 gulp.task('test', function (done) {
