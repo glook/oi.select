@@ -1,4 +1,4 @@
-const throttle = function (fn, threshhold, scope) {
+const throttleFn = function (fn, threshhold, scope) {
     threshhold || (threshhold = 250);
     var last,
         deferTimer;
