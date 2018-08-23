@@ -316,6 +316,9 @@ angular.module('selectDemo')
             return result.slice(page * pagesize,
                 (page * pagesize) + pagesize - 1);
         };
-        $scope.bundle = null;
+        $scope.bundle =  {
+            "id": "5b7335521c5befb4d5f8fd3b",
+            "name": "Raquel"
+        };
     })
 ;
