@@ -12,7 +12,7 @@ angular.module('oi.select')
             compile: function (element, attrs) {
                 return function (scope, element, attrs, ctrl) {
                     let oiSelectOptions = {};
-                    let watchers = {};
+                    const watchers = {};
                     let clickEvent = false;
                     if (angular.isDefined(attrs.oiOptions)) {
                         const match = attrs.oiOptions.match(NG_OPTIONS_REGEXP);
@@ -535,8 +535,12 @@ angular.module('oi.select')
                         scope.$on('$destroy', function () {
                             element[0].removeEventListener('click', click, true);
                         });
-                        element.on('focus', focus);
-                        element.on('blur', blur);
+                        element
+                            .off('focus')
+                            .on('focus', focus);
+                        element
+                            .off('blur')
+                            .on('blur', blur);
 
                         function blinkClass(name, delay) {
                             delay = delay || 150;

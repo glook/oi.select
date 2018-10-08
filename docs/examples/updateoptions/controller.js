@@ -13,8 +13,8 @@ angular.module('selectDemo')
             if ($scope.selectedOption) {
                 $scope.oiSelectOptions = {
                     editItem: true,
-                    newItem: 'prompt',
-                    saveTrigger: 'enter blur tab',
+                    newItem: true,
+                    saveTrigger: 'enter blur tab space',
                     maxlength: 200,
                     minlength: 3,
                 };

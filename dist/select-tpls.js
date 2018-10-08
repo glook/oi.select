@@ -907,8 +907,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     scope.$on('$destroy', function () {
                         element[0].removeEventListener('click', click, true);
                     });
-                    element.on('focus', focus);
-                    element.on('blur', blur);
+                    element.off('focus').on('focus', focus);
+                    element.off('blur').on('blur', blur);
 
                     function blinkClass(name, delay) {
                         delay = delay || 150;
