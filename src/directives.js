@@ -702,6 +702,10 @@ angular.module('oi.select')
                             if (timeoutPromise && waitTime) {
                                 $timeout.cancel(timeoutPromise); //cancel previous timeout
                             }
+                            // Updating wait time before first promise will be execute
+                            if (options.debounce) {
+                                waitTime = options.debounce;
+                            }
 
                             timeoutPromise = $timeout(function () {
                                 var values = valuesFn(scope.$parent, {

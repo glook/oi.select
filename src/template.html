@@ -7,16 +7,19 @@
             ng-click="removeItem($index)"
             ng-bind-html="getSearchLabel(item)"></li>
         <li class="select-search-list-item oi-select__search-list-item select-search-list-item_input oi-select__search-list-item_input"
-            ng-class="{'select-search-list-item_hide oi-select__search-list-item_hide': inputHide}"><input autocomplete="off"
-                                                                          ng-model="query"
-                                                                          ng-keyup="keyUp($event)"
-                                                                          ng-keydown="keyDown($event)"/></li>
+            ng-class="{'select-search-list-item_hide oi-select__search-list-item_hide': inputHide}">
+            <input autocomplete="off"
+                   ng-model="query"
+                   ng-keyup="keyUp($event)"
+                   ng-keydown="keyDown($event)"/>
+        </li>
         <li class="select-search-list-item oi-select__search-list-item select-search-list-item_loader oi-select__search-list-item_loader"
             ng-show="showLoader"></li>
     </ul>
 </div>
 <div class="oi-select__dropdown select-dropdown" ng-show="isOpen">
-    <ul ng-if="isOpen" class="select-dropdown-optgroup oi-select__dropdown-optgroup" ng-repeat="(group, options) in groups">
+    <ul ng-if="isOpen" class="select-dropdown-optgroup oi-select__dropdown-optgroup"
+        ng-repeat="(group, options) in groups">
         <div class="select-dropdown-optgroup-header oi-select__dropdown-optgroup-header"
              ng-if="group && options.length"
              ng-bind-html="getGroupLabel(group, options)"></div>
