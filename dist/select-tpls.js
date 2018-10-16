@@ -1204,7 +1204,6 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         scope.showLoader = false;
                         scope.isOpen = false;
                         waitTime = 0;
-
                         if (!options.query) {
                             scope.query = '';
                         }

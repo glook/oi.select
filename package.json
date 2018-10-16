@@ -1,7 +1,7 @@
 {
     "name": "oi.select",
     "license": "MIT",
-    "version": "0.3.4",
+    "version": "0.3.5",
     "repository": {
         "type": "git",
         "url": "git://github.com/glook/oi.select.git"
@@ -19,6 +19,7 @@
         "gulp-minify-css": "1.2.4",
         "gulp-minify-html": "1.0.6",
         "gulp-rename": "1.4.0",
+        "gulp-sass": "^4.0.2",
         "gulp-stylus": "2.7.0",
         "gulp-uglify": "3.0.1",
         "gulp-uglify-es": "^1.0.4",
@@ -37,6 +38,7 @@
         "karma-opera-launcher": "1.0.0",
         "karma-phantomjs-launcher": "1.0.4",
         "karma-sauce-launcher": "1.2.0",
+        "node-sass": "^4.9.4",
         "stream-series": "0.1.1"
     },
     "browser": "index.js",

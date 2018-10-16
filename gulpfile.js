@@ -11,9 +11,12 @@ var minifyHtml = require('gulp-minify-html');
 var uglify = require('gulp-uglify-es').default;
 var stylus = require('gulp-stylus');
 var KarmaServer = require('karma').Server;
+var sass = require('gulp-sass');
+sass.compiler = require('node-sass');
 var autoprefixer = require('autoprefixer-stylus')({
     browsers: ["ff >= 20", "chrome >= 35", "safari >= 7", "ios >= 7", "android >= 4", "opera >= 12.1", "ie >= 10"]
 });
+
 var babel = require('gulp-babel');
 
 var paths = {
@@ -38,9 +41,7 @@ gulp.task('clean', function () {
 
 gulp.task('compileStyles', function () {
     return gulp.src(path.join(paths.src, 'style.scss'))
-        .pipe(stylus({
-            use: autoprefixer
-        }))
+        .pipe(sass.sync().on('error', sass.logError))
         .pipe(concat('select.css'))
         .pipe(gulp.dest(paths.dist))
         .pipe(minifyCss())
