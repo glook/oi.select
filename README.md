@@ -1,6 +1,6 @@
-#oi.select — AngularJS directive of select element
+# oi.select — AngularJS directive of select element
 
-**[Download 0.3.0](https://github.com/tamtakoe/glook/tree/master/dist)**
+**[Download 0.3.4](https://github.com/glook/oi.select/releases)**
 
 ## Features
 
@@ -13,30 +13,13 @@
 
 ## Demo
 
-Do you want to see module in action? Visit [tamtakoe.github.io/oi.select/](//tamtakoe.github.io/oi.select/) or try [playground](http://plnkr.co/edit/LnntLUdrAfz0DDlCGtGv?p=preview)
-
+Do you want to see module in action? Visit [glook.github.io/oi.select/](//glook.github.io/oi.select/)
 
 ## Installation
 
-You can download files through Bower:
-
+use npm:
 ```
-npm install -g bower
-bower install oi.select
-```
-
-or use npm:
-```
-npm install --save oi.select
-```
-
-or use local:
-
-```
-npm install
-npm install -g bower
-npm install -g gulp
-bower install
+npm install --save glook/oi.select
 ```
 
 run local:
