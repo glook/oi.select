@@ -40,10 +40,10 @@ angular.module('oi.select').provider('oiSelect', function () {
             minlength: 0
         },
         version: {
-            full: '0.2.21',
+            full: '0.3.36',
             major: 0,
-            minor: 2,
-            dot: 21
+            minor: 3,
+            dot: 36
         },
         $get: function $get() {
             return {
@@ -1060,7 +1060,6 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     function getMatches(query, selectedAs) {
                         var append = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-
                         if (append) {
                             scope.page++;
                         } else {
@@ -1072,7 +1071,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                             $timeout.cancel(timeoutPromise); //cancel previous timeout
                         }
                         // Updating wait time before first promise will be execute
-                        if (options.debounce) {
+                        if (elementOptions.debounce && elementOptions.minlength) {
                             waitTime = options.debounce;
                         }
 
@@ -1204,6 +1203,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         scope.showLoader = false;
                         scope.isOpen = false;
                         waitTime = 0;
+
                         if (!options.query) {
                             scope.query = '';
                         }
@@ -1247,7 +1247,7 @@ angular.module('oi.select').filter('oiSelectGroup', ['$sce', function ($sce) {
     };
 }]).filter('oiSelectCloseIcon', ['$sce', function ($sce) {
     return function (label) {
-        var closeIcon = '<span class="close select-search-list-item_selection-remove">×</span>';
+        var closeIcon = '<span class="oi-select__remove select-search-list-item_selection-remove">×</span>';
 
         return $sce.trustAsHtml(label + closeIcon);
     };

@@ -8,7 +8,7 @@ angular.module('oi.select')
 
 .filter('oiSelectCloseIcon', ['$sce', function($sce) {
     return function(label) {
-        var closeIcon = '<span class="close select-search-list-item_selection-remove">×</span>';
+        var closeIcon = '<span class="oi-select__remove select-search-list-item_selection-remove">×</span>';
 
         return $sce.trustAsHtml(label + closeIcon);
     };

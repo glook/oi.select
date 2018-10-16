@@ -691,7 +691,6 @@ angular.module('oi.select')
                         }
 
                         function getMatches(query, selectedAs, append = false) {
-
                             if (append) {
                                 scope.page++;
                             } else {
@@ -703,7 +702,7 @@ angular.module('oi.select')
                                 $timeout.cancel(timeoutPromise); //cancel previous timeout
                             }
                             // Updating wait time before first promise will be execute
-                            if (options.debounce) {
+                            if (elementOptions.debounce && elementOptions.minlength) {
                                 waitTime = options.debounce;
                             }
 

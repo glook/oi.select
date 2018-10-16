@@ -40,10 +40,10 @@ angular.module('oi.select').provider('oiSelect', function () {
             minlength: 0
         },
         version: {
-            full: '0.2.21',
+            full: '0.3.36',
             major: 0,
-            minor: 2,
-            dot: 21
+            minor: 3,
+            dot: 36
         },
         $get: function $get() {
             return {
@@ -1060,7 +1060,6 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     function getMatches(query, selectedAs) {
                         var append = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-
                         if (append) {
                             scope.page++;
                         } else {
@@ -1072,7 +1071,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                             $timeout.cancel(timeoutPromise); //cancel previous timeout
                         }
                         // Updating wait time before first promise will be execute
-                        if (options.debounce) {
+                        if (elementOptions.debounce && elementOptions.minlength) {
                             waitTime = options.debounce;
                         }
 
@@ -1204,6 +1203,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         scope.showLoader = false;
                         scope.isOpen = false;
                         waitTime = 0;
+
                         if (!options.query) {
                             scope.query = '';
                         }
@@ -1247,7 +1247,7 @@ angular.module('oi.select').filter('oiSelectGroup', ['$sce', function ($sce) {
     };
 }]).filter('oiSelectCloseIcon', ['$sce', function ($sce) {
     return function (label) {
-        var closeIcon = '<span class="close select-search-list-item_selection-remove">×</span>';
+        var closeIcon = '<span class="oi-select__remove select-search-list-item_selection-remove">×</span>';
 
         return $sce.trustAsHtml(label + closeIcon);
     };
@@ -1328,4 +1328,4 @@ angular.module('oi.select').filter('oiSelectGroup', ['$sce', function ($sce) {
         return input;
     };
 });
-angular.module('oi.select').run(['$templateCache', function($templateCache) {$templateCache.put('src/template.html','<div class="oi-select__search select-search"><ul class="select-search-list oi-select__search-list"><li class="select-search-list-item oi-select__search-list-item select-search-list-item_selection oi-select__search-list-item_selection" ng-hide=listItemHide ng-repeat="item in output track by $index" ng-class="{focused: backspaceFocus && $last}" ng-click=removeItem($index) ng-bind-html=getSearchLabel(item)></li><li class="select-search-list-item oi-select__search-list-item select-search-list-item_input oi-select__search-list-item_input" ng-class="{\'select-search-list-item_hide oi-select__search-list-item_hide\': inputHide}"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class="select-search-list-item oi-select__search-list-item select-search-list-item_loader oi-select__search-list-item_loader" ng-show=showLoader></li></ul></div><div class="oi-select__dropdown select-dropdown" ng-show=isOpen><ul ng-if=isOpen class="select-dropdown-optgroup oi-select__dropdown-optgroup" ng-repeat="(group, options) in groups"><div class="select-dropdown-optgroup-header oi-select__dropdown-optgroup-header" ng-if="group && options.length" ng-bind-html="getGroupLabel(group, options)"></div><li class="select-dropdown-optgroup-option oi-select__dropdown-optgroup-option" ng-init="isDisabled = getDisableWhen(option)" ng-repeat="option in options" ng-class="{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}" ng-click="isDisabled || addItem(option)" ng-mouseenter="setSelection(groupPos[group] + $index)" ng-bind-html=getDropdownLabel(option)></li></ul></div>');}]);
+angular.module('oi.select').run(['$templateCache', function($templateCache) {$templateCache.put('src/template.html','<div class="oi-select__search select-search"><ul class="select-search-list oi-select__search-list"><li class="select-search-list-item oi-select__search-list-item select-search-list-item_selection oi-select__search-list-item_selection" ng-hide=listItemHide ng-repeat="item in output track by $index" ng-class="{focused: backspaceFocus && $last}" ng-click=removeItem($index)><span class=select-search-list-label ng-bind-html=getSearchLabel(item)></span></li><li class="select-search-list-item oi-select__search-list-item select-search-list-item_input oi-select__search-list-item_input" ng-class="{\'select-search-list-item_hide oi-select__search-list-item_hide\': inputHide}"><input autocomplete=off ng-model=query ng-keyup=keyUp($event) ng-keydown=keyDown($event)></li><li class="select-search-list-item oi-select__search-list-item select-search-list-item_loader oi-select__search-list-item_loader" ng-show=showLoader></li></ul></div><div class="oi-select__dropdown select-dropdown" ng-show=isOpen><ul ng-if=isOpen class="select-dropdown-optgroup oi-select__dropdown-optgroup" ng-repeat="(group, options) in groups"><div class="select-dropdown-optgroup-header oi-select__dropdown-optgroup-header" ng-if="group && options.length" ng-bind-html="getGroupLabel(group, options)"></div><li class="select-dropdown-optgroup-option oi-select__dropdown-optgroup-option" ng-init="isDisabled = getDisableWhen(option)" ng-repeat="option in options" ng-class="{\'active\': selectorPosition === groupPos[group] + $index, \'disabled\': isDisabled, \'ungroup\': !group}" ng-click="isDisabled || addItem(option)" ng-mouseenter="setSelection(groupPos[group] + $index)" ng-bind-html=getDropdownLabel(option)></li></ul></div>');}]);

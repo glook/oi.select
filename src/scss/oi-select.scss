@@ -1,21 +1,17 @@
-$oi-select-border-color: #d9d9d9;
-$oi-select-dropdown-border-color: #66afe9;
-$oi-select-dropdown-background-color: #fff;
+@import "mixins";
 
 oi-select {
   display: block;
   position: relative;
   width: 100%;
-
   .select {
     &-search {
       cursor: text;
       border: 1px solid $oi-select-border-color;
-      background-color: white;
+      background-color: $oi-select-background;
       overflow: hidden !important;
       box-sizing: border-box;
-      border-radius: 4px;
-
+      border-radius: $oi-select-border-radius;
       &-list {
         display: flex;
         flex-flow: row wrap;
@@ -23,27 +19,38 @@ oi-select {
         margin: 0;
         padding: 2px 4px;
         list-style: none;
-
+        min-height: 34px;
+        &-label {
+          line-height: 23px;
+        }
         &-item {
           font-size: 14px;
           margin: 2px 4px 2px 0;
           vertical-align: middle;
           white-space: normal;
+          padding: 1px 5px;
 
           &_selection {
             cursor: pointer;
-            background: #efefef;
-            border-color: #ebebeb;
-
+            background: $oi-select-dropdown-multiple-item-background;
+            color: $oi-select-dropdown-multiple-item-color;
+            border-color: $oi-select-dropdown-multiple-item-border-color;
+            border-radius: $oi-select-dropdown-multiple-item-border-radius;
+            @if($oi-select-dropdown-multiple-item-border-radius > 9px){
+              padding: 1px 5px 1px 10px;
+            }
             &:hover {
-              border-color: #e5e5e5;
+              background: $oi-select-dropdown-multiple-item-background--hover;
+              color: $oi-select-dropdown-multiple-item-color--hover;
+              border-color: $oi-select-dropdown-multiple-item-border-color--hover;
+
             }
 
             &:active,
             &.focused {
-              border: 1px solid #fff;
-              border-radius: 0;
-              box-shadow: inset 0 0 10px 5px #fff;
+              border-color: $oi-select-dropdown-multiple-item-border-color--active;
+              border-radius: $oi-select-dropdown-multiple-item-border-radius;
+              background: $oi-select-dropdown-multiple-item-background--active;
             }
 
             &.focused {
@@ -51,9 +58,12 @@ oi-select {
                 display: none;
               }
             }
-
             &-remove {
-              padding-left: 2px;
+              opacity: 0.8;
+              padding: 0 2px 0 4px;
+              line-height: 15px;
+              margin: 3px;
+              color: $oi-select-dropdown-multiple-item-color;
             }
           }
 
@@ -61,23 +71,28 @@ oi-select {
             float: right;
             width: 23px;
             height: 23px;
-            margin: 3px 3px 0 0;
+            margin: 3px 4px 0 0;
             position: relative;
             background-color: $oi-select-dropdown-border-color;
             border-radius: 100%;
-            -webkit-animation: sk-scaleout 1.0s infinite ease-in-out;
-            animation: sk-scaleout 1.0s infinite ease-in-out;
+            -webkit-animation: oi-select-loader-animation 1.0s infinite ease-in-out;
+            animation: oi-select-loader-animation 1.0s infinite ease-in-out;
           }
 
           &_input {
             flex-grow: 1;
-            margin: 4px 0 5px 5px;
+            margin: 3px 0 3px 0;
 
             input {
               padding: 0;
               outline: 0;
               border: 0;
               width: 100%;
+              background: transparent;
+              color: $oi-select-input-color;
+              @include placeholder {
+                color: $oi-select-input-placeholder-color;
+              }
             }
           }
 
@@ -101,12 +116,12 @@ oi-select {
       max-height: 100px;
       min-width: 160px;
       font-size: 14px;
-      background-color: $oi-select-dropdown-background-color;
-      border-radius: 0 0 4px 4px;
+      background-color: $oi-select-dropdown-background;
+      border-radius: 0 0 $oi-select-border-radius $oi-select-border-radius;
       border: 1px solid $oi-select-dropdown-border-color;
       border-top: 0;
       outline: 0;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-dropdown-border-color,0.3);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-dropdown-border-color, 0.3);
       background-clip: padding-box;
       z-index: 1000;
 
@@ -120,15 +135,17 @@ oi-select {
         }
 
         &-option {
-          padding: 3px 20px;
+          padding: 6px 20px;
 
           &.active:not(.disabled) {
-            background-color: #f1f1f1;
+            background-color: $oi-select-dropdown-active-background;
+            color: $oi-select-dropdown-active-color;
             cursor: pointer;
           }
 
           &.disabled {
-            color: #aaa;
+            color: $oi-select-dropdown-disabled-color;
+            cursor: not-allowed;
           }
         }
       }
@@ -141,13 +158,27 @@ oi-select {
         &-list {
           &-item {
             &_selection {
-              color: #000;
+              color: $oi-select-input-color;
               width: 100%;
-              border-color: #fff;
               text-align: left;
-
+              padding: 1px 5px;
+              border-color: transparent;
+              background: transparent;
               &:not(:active) {
                 background: none;
+              }
+              &-remove{
+                color: $oi-select-input-color;
+                opacity: 0.6;
+                background: transparent;
+                float: right;
+                font-size: 21px;
+                font-weight: 500;
+                padding: 0;
+                &:hover,&:focus{
+                  opacity: 0.8;
+                  color: $oi-select-input-color--focused;
+                }
               }
             }
           }
@@ -173,11 +204,11 @@ oi-select {
           content: "";
           position: absolute;
           display: block;
-          right: 10px;
+          right: 16px;
           width: 0;
           height: 0;
           margin-top: -19px;
-          border-color: #000 transparent transparent transparent;
+          border-color: $oi-select-input-color transparent transparent transparent;
           border-style: solid;
           border-width: 5px 5px 0 5px;
         }
@@ -189,19 +220,21 @@ oi-select {
     .select {
       &-search {
         cursor: not-allowed;
-        background: #eee;
-        border: 1px solid #bdbdbd;
+        background: $oi-select-disabled-background;
+        border: 1px solid $oi-select-disabled-border-color;
         opacity: 0.5;
-
         &-list {
           &-item {
             &_selection {
               cursor: not-allowed;
               box-shadow: none;
               border-color: transparent;
+              pointer-events: none;
 
               &-remove {
                 visibility: hidden;
+                width: 0;
+                padding: 0;
               }
             }
 
@@ -219,30 +252,29 @@ oi-select {
 
   &.focused {
     .select-search {
-      border-color: #66afe9;
+      border-color: $oi-select-dropdown-border-color;
       outline: 0;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-dropdown-border-color, 0.6);
     }
   }
 
   &.limited, &.invalid-item {
     .select-search,
     .select-dropdown {
-      border-color: #f1bc28;
-      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(230, 189, 46, 0.6);
+      border-color: $oi-select-invalid-color;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-invalid-color, 0.6);
     }
   }
 
   &.open {
     .select-search {
-      border-radius: 4px 4px 0 0;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+      border-radius: $oi-select-border-radius $oi-select-border-radius 0 0;
     }
   }
 
   &.open:not(.multiple) {
     .select-search:after {
-      border-color: transparent transparent #000 transparent;
+      border-color: transparent transparent $oi-select-input-color transparent;
       border-width: 0 5px 5px 5px;
     }
   }
@@ -262,21 +294,24 @@ oi-select {
   }
 }
 
-@-webkit-keyframes sk-scaleout {
-  0% { -webkit-transform: scale(0) }
+@-webkit-keyframes oi-select-loader-animation {
+  0% {
+    -webkit-transform: scale(0)
+  }
   100% {
     -webkit-transform: scale(1.0);
     opacity: 0;
   }
 }
 
-@keyframes sk-scaleout {
+@keyframes oi-select-loader-animation {
   0% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 100% {
-      -webkit-transform: scale(1.0);
-      transform: scale(1.0);
-      opacity: 0;
-    }
+  }
+  100% {
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+    opacity: 0;
+  }
 }

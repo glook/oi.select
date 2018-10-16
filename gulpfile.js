@@ -40,7 +40,7 @@ gulp.task('clean', function () {
 });
 
 gulp.task('compileStyles', function () {
-    return gulp.src(path.join(paths.src, 'style.scss'))
+    return gulp.src(path.join(paths.src, './scss/style.scss'))
         .pipe(sass.sync().on('error', sass.logError))
         .pipe(concat('select.css'))
         .pipe(gulp.dest(paths.dist))

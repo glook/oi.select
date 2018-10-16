@@ -7,6 +7,10 @@
                 oi-options="item.name for item in shopArrFn($query)"
                 ng-model="bundle"
                 placeholder="Select"
+                oi-select-options="{
+                minlength: 2,
+                debounce: 500,
+                }"
                 ></oi-select>
         </div>
     </div>
@@ -15,6 +19,10 @@
 <div hljs class="col-md-8">
 oi-options="item.name for item in shopArrFn($query)"
 ng-model="bundle"
+oi-select-options="{
+    minlength: 2,
+    debounce: 500,
+}"
 </div>
 <div class="col-md-4"><pre>
 {{bundle}}

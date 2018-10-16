@@ -3,17 +3,17 @@ angular.module('selectDemo')
 
         $scope.shopArr = ShopArr.query();
 
-        $scope.shopArrFn = function(query, querySelectAs) {
+        $scope.shopArrFn = function (query, querySelectAs) {
             return findOptions(query);
         };
 
         function findOptions(query) {
             var deferred = $q.defer();
 
-            $timeout(function() {
+            $timeout(function () {
                 $scope.shopArr.$promise
                     .then(deferred.resolve);
-            }, 1000);
+            }, 2500);
 
             return deferred.promise;
         }
