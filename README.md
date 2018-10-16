@@ -19,7 +19,7 @@ Do you want to see module in action? Visit [glook.github.io/oi.select/](//glook.
 
 use npm:
 ```
-npm install --save glook/oi.select
+npm install --save @glook/oi.select
 ```
 
 run local:
