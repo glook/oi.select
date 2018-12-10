@@ -1,0 +1,72 @@
+.oi-select__primary {
+  $oi-select-field-background: rgb(72, 109, 201);
+  $oi-select-border-color: darken($oi-select-field-background, 20);
+  $oi-select-field-box-shadow: 0 1px 4px darken($oi-select-field-background, 6) inset;
+
+  $oi-select-input-color: #fff;
+  $oi-select-input-placeholder-color: darken($oi-select-input-color, 10);
+  $oi-select-input-color--focused: darken($oi-select-field-background, 65);
+  $oi-select-dropdown-border-color: darken($oi-select-field-background, 10);
+  $oi-select-dropdown-background: #fff;
+
+  $oi-select-option-background: darken($oi-select-dropdown-border-color, 2);
+  $oi-select-option-color: #fff;
+
+  $oi-select-option-disabled-color: darken($oi-select-field-background, 20);
+
+  $oi-select-item-border-radius: 20px;
+  $oi-select-item-background: lighten($oi-select-field-background,10);
+  $oi-select-item-color: lighten($oi-select-field-background,60);
+
+  $oi-select-item-multiple-hover-background-color: darken($oi-select-item-background, 20);
+  $oi-select-item-multiple-focus-background-color: darken($oi-select-item-background, 30);
+
+  $oi-select-disabled-background: darken($oi-select-field-background, 10);
+  $oi-select-disabled-border-color: darken($oi-select-field-background, 25);
+
+  $oi-select-invalid-color: #e47833;
+  $oi-select-invalid-border-color: $oi-select-invalid-color;
+  $oi-select-border-radius: 5px;
+
+  $oi-select-loader-color: $oi-select-dropdown-border-color;
+  $oi-select-dropdown-arrow-color: $oi-select-input-color;
+
+  @import "templates";
+}
+
+.oi-select__warning {
+  $oi-select-field-background: rgb(232, 126, 4);
+  $oi-select-border-color: darken($oi-select-field-background, 20);
+  $oi-select-field-box-shadow: 0 1px 4px darken($oi-select-field-background, 6) inset;
+
+  $oi-select-input-color: #fff;
+  $oi-select-input-placeholder-color: darken($oi-select-input-color, 10);
+  $oi-select-input-color--focused: darken($oi-select-field-background, 65);
+  $oi-select-dropdown-border-color: darken($oi-select-field-background, 10);
+  $oi-select-dropdown-background: #fff;
+
+  $oi-select-option-background: darken($oi-select-dropdown-border-color, 2);
+  $oi-select-option-color: #fff;
+
+  $oi-select-option-disabled-color: darken($oi-select-field-background, 20);
+
+  $oi-select-item-border-radius: 3px;
+  $oi-select-item-background: lighten($oi-select-field-background,20);
+  $oi-select-item-color: lighten($oi-select-field-background,60);
+
+  $oi-select-item-multiple-hover-background-color: darken($oi-select-item-background, 5);
+  $oi-select-item-multiple-focus-background-color: darken($oi-select-item-background, 10);
+
+  $oi-select-disabled-background: darken($oi-select-field-background, 10);
+  $oi-select-disabled-border-color: darken($oi-select-field-background, 25);
+
+  $oi-select-invalid-color: #e47833;
+  $oi-select-invalid-border-color: $oi-select-invalid-color;
+  $oi-select-border-radius: 0px;
+
+  $oi-select-loader-color: $oi-select-dropdown-border-color;
+  $oi-select-dropdown-arrow-color: $oi-select-input-color;
+
+
+  @import "templates";
+}
