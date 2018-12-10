@@ -1,0 +1,126 @@
+@import "mixins";
+@import "selectors";
+
+.oi-select {
+  &__field {
+    border: 1px solid $oi-select-border-color;
+    background-color: $oi-select-field-background;
+    border-radius: $oi-select-border-radius;
+    box-shadow: $oi-select-field-box-shadow;
+  }
+  &__item {
+    &_selection {
+      background: $oi-select-item-background;
+      color: $oi-select-item-color;
+      border-radius: $oi-select-item-border-radius;
+    }
+  }
+
+  &__dropdown {
+    background-color: $oi-select-dropdown-background;
+    border-radius: 0 0 $oi-select-border-radius $oi-select-border-radius;
+    border: 1px solid $oi-select-dropdown-border-color;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-dropdown-border-color, 0.3);
+  }
+
+  &__option {
+    &.active:not(.disabled) {
+      background-color: $oi-select-option-background;
+      color: $oi-select-option-color;
+    }
+
+    &.disabled {
+      color: $oi-select-option-disabled-color;
+    }
+  }
+
+  &__input {
+    &_element {
+      color: $oi-select-input-color;
+      @include placeholder {
+        color: $oi-select-input-placeholder-color;
+      }
+    }
+  }
+
+  &__loader {
+    border-top: 1.1em solid $oi-select-loader-color;
+    border-right: 1.1em solid $oi-select-loader-color;
+    border-bottom: 1.1em solid $oi-select-loader-color;
+    border-left: 1.1em solid transparent;
+  }
+
+  &_limited, &_invalid-item {
+    #{$oi-select-field},
+    #{$oi-select-dropdown} {
+      border-color: $oi-select-invalid-border-color !important;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-invalid-color, 0.6) !important;
+    }
+  }
+
+  &__remove {
+    color: $oi-select-item-color;
+  }
+
+  &_single {
+    &#{$oi-select-open} {
+      #{$oi-select-field} {
+        &:after {
+          border-color: transparent transparent $oi-select-dropdown-arrow-color transparent !important;
+        }
+      }
+    }
+
+    #{$oi-select-remove} {
+      color: $oi-select-input-color;
+      &:hover, &:focus {
+        color: $oi-select-input-color--focused;
+      }
+    }
+
+    #{$oi-select-item-selection} {
+      color: $oi-select-input-color;
+    }
+
+
+    #{$oi-select-field} {
+      &:after {
+        border-color: $oi-select-dropdown-arrow-color transparent transparent transparent;
+      }
+    }
+  }
+
+  &_multiple {
+    #{$oi-select-item} {
+      &_selection {
+        &:hover{
+          background: $oi-select-item-multiple-hover-background-color;
+        }
+
+        &:focus,&:active{
+          background: $oi-select-item-multiple-focus-background-color;
+        }
+      }
+    }
+  }
+
+  &_focused {
+    #{$oi-select-field} {
+      border-color: $oi-select-dropdown-border-color;
+      box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba($oi-select-dropdown-border-color, 0.5);
+    }
+  }
+
+  &_open {
+    #{$oi-select-field} {
+      border-radius: $oi-select-border-radius $oi-select-border-radius 0 0;
+    }
+  }
+
+  &[disabled="disabled"] {
+    #{$oi-select-field} {
+      background: $oi-select-disabled-background;
+      border: 1px solid $oi-select-disabled-border-color;
+    }
+  }
+}

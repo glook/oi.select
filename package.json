@@ -1,7 +1,7 @@
 {
   "name": "@glook/oi.select",
   "license": "MIT",
-  "version": "0.3.6",
+  "version": "0.4.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/glook/oi.select.git"
@@ -14,6 +14,7 @@
     "del": "3.0.0",
     "gulp": "3.9.1",
     "gulp-angular-templatecache": "2.2.1",
+    "gulp-autoprefixer": "^6.0.0",
     "gulp-babel": "^7.0.1",
     "gulp-concat": "2.6.1",
     "gulp-minify-css": "1.2.4",
@@ -39,6 +40,7 @@
     "karma-phantomjs-launcher": "1.0.4",
     "karma-sauce-launcher": "1.2.0",
     "node-sass": "^4.9.4",
+    "run-sequence": "^2.2.1",
     "stream-series": "0.1.1"
   },
   "browser": "index.js",

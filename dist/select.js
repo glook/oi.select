@@ -360,6 +360,8 @@ angular.module('oi.select').provider('oiSelect', function () {
 }]);
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout', '$parse', '$interpolate', '$injector', '$filter', '$animate', 'oiUtils', 'oiSelect', function ($document, $q, $timeout, $parse, $interpolate, $injector, $filter, $animate, oiUtils, oiSelect) {
     var NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?(?:\s+disable\s+when\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
     var VALUES_REGEXP = /([^\(\)\s\|\s]*)\s*(\(.*\))?\s*(\|?\s*.+)?/;
@@ -368,20 +370,21 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
         restrict: 'AE',
         templateUrl: 'src/template.html',
         require: 'ngModel',
-        scope: {},
+        scope: {
+            oiOptions: '@'
+        },
         compile: function compile(element, attrs) {
             return function (scope, element, attrs, ctrl) {
-                var oiSelectOptions = {};
                 var watchers = {};
                 var clickEvent = false;
                 if (angular.isDefined(attrs.oiOptions)) {
                     var match = attrs.oiOptions.match(NG_OPTIONS_REGEXP);
                     if (match) {
-                        onBeforeRender(attrs.oiOptions);
+                        onBeforeRender();
                     } else {
-                        scope.$parent.$watch(attrs.oiOptions, function (value) {
-                            onBeforeRender(value);
-                        });
+                        scope.$parent.$watch(attrs.oiOptions, function () {
+                            return onBeforeRender();
+                        }, true);
                     }
                 }
                 if (angular.isDefined(attrs.oiSelectOptions)) {
@@ -391,21 +394,27 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                 }
 
                 function onBeforeRender() {
-                    var value = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-
-                    if (value) oiSelectOptions = value;
-
+                    scope.rendered = false;
                     Object.keys(watchers).map(function (key) {
                         if (typeof watchers[key] === 'function') {
                             watchers[key]();
                             delete watchers[key];
                         }
                     });
-                    render(oiSelectOptions);
-                };
+                    render();
+                }
 
-                function render(oiOptions) {
-                    var optionsExp = oiOptions,
+                function render() {
+                    var oiOptions = scope.oiOptions;
+                    try {
+                        var checkOptionRegexp = function checkOptionRegexp(input) {
+                            return typeof input === 'string' ? NG_OPTIONS_REGEXP.test(input) : false;
+                        };
+                        if (!checkOptionRegexp(oiOptions)) oiOptions = scope.$parent.$eval(scope.oiOptions);
+                    } catch (e) {
+                        scope.rendered = false;
+                    }
+                    var optionsExp = typeof oiOptions === 'string' ? oiOptions : false,
                         match = optionsExp ? optionsExp.match(NG_OPTIONS_REGEXP) : ['', 'i', '', '', '', 'i', '', '', ''];
 
                     if (!match) {
@@ -462,9 +471,16 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         optionsFn = $parse(attrs.oiSelectOptions),
                         isOldAngular = angular.version.major <= 1 && angular.version.minor <= 3;
 
-                    var keyUpDownWerePressed, matchesWereReset, timeoutPromise, lastQuery, removedItem, multiple, multipleLimit, newItemFn;
+                    var keyUpDownWerePressed,
+                        matchesWereReset,
+                        timeoutPromise,
+                        lastQuery,
+                        removedItem,
+                        multiple = angular.isDefined(attrs.multiple),
+                        multipleLimit,
+                        newItemFn;
                     var inputElement = element.find('input'),
-                        listElement = angular.element(element[0].querySelector('.select-dropdown')),
+                        listElement = angular.element(element[0].querySelector('.oi-select__dropdown')),
                         placeholder = placeholderFn(scope),
                         multiplePlaceholder = multiplePlaceholderFn(scope),
                         listPlaceholder = listPlaceholderFn(scope),
@@ -481,6 +497,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     var isPageVariableExists = function isPageVariableExists() {
                         return valuesFnName.match(/\$page/);
                     };
+
+                    element.addClass('oi-select');
 
                     // Override the standard $isEmpty because an empty array means the input is empty.
                     ctrl.$isEmpty = function (value) {
@@ -532,7 +550,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     }
 
                     if (options.cleanModel && (!editItem || editItemIsCorrected)) {
-                        element.addClass('cleanMode');
+                        element.addClass('oi-select_cleanMode');
                     }
 
                     var unbindFocusBlur = oiUtils.bindFocusBlur(element, inputElement);
@@ -561,6 +579,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         inputElement.attr('maxlength', options.maxlength);
                     }
 
+                    element[options.minlength ? 'addClass' : 'removeClass']('oi-select_minlenght');
+
                     attrs.$observe('disabled', function (value) {
                         inputElement.prop('disabled', value);
 
@@ -578,14 +598,14 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
 
                     watchers.multiple = scope.$parent.$watch(attrs.multiple, function (multipleValue) {
                         multiple = multipleValue === undefined ? angular.isDefined(attrs.multiple) : multipleValue;
-
-                        element[multiple ? 'addClass' : 'removeClass']('multiple');
+                        element[multiple ? 'addClass' : 'removeClass']('oi-select_multiple');
+                        element[!multiple ? 'addClass' : 'removeClass']('oi-select_single');
                     });
 
                     function valueChangedManually() {
                         //case: clean model; prompt + editItem: 'correct'; initial value = defined/undefined
                         if (editItemIsCorrected) {
-                            element.removeClass('cleanMode');
+                            element.removeClass('oi-select__cleanMode');
                         }
                         editItemIsCorrected = false;
                     }
@@ -593,16 +613,12 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     watchers.ngModel = scope.$parent.$watch(attrs.ngModel, function (value, oldValue) {
                         var output = compact(value),
                             promise = $q.when(output);
+                        setTimeout(function () {
+                            return modifyPlaceholder();
+                        });
 
-                        modifyPlaceholder();
-
-                        if (exists(oldValue) && value !== oldValue) {
-                            valueChangedManually();
-                        }
-
-                        if (!multiple) {
-                            restoreInput();
-                        }
+                        if (exists(oldValue) && value !== oldValue) valueChangedManually();
+                        if (multiple === false) restoreInput();
 
                         if (selectAsFn && exists(value)) {
                             promise = getMatches(null, value).then(function (collection) {
@@ -657,8 +673,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     });
 
                     watchers.isFocused = scope.$watch('isFocused', function (isFocused) {
-                        $animate[isFocused ? 'addClass' : 'removeClass'](element, 'focused', !isOldAngular && {
-                            tempClasses: 'focused-animate'
+                        $animate[isFocused ? 'addClass' : 'removeClass'](element, 'oi-select_focused', !isOldAngular && {
+                            tempClasses: 'oi-select_focused-animate'
                         });
                     });
 
@@ -682,9 +698,10 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     var throttledOnScrollListener = throttleFn(onScrollFn, throttle);
 
                     watchers.isOpen = scope.$watch('isOpen', function (isOpen) {
-                        $animate[isOpen ? 'addClass' : 'removeClass'](element, 'open', !isOldAngular && {
-                            tempClasses: 'open-animate'
+                        $animate[isOpen ? 'addClass' : 'removeClass'](element, 'oi-select_open', !isOldAngular && {
+                            tempClasses: 'oi-select_open-animate'
                         });
+
                         if (isOpen) {
                             if (isPageVariableExists()) setTimeout(function () {
                                 return element[0].addEventListener('scroll', throttledOnScrollListener, true);
@@ -695,14 +712,14 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     });
 
                     watchers.isEmptyList = scope.$watch('isEmptyList', function (isEmptyList) {
-                        $animate[isEmptyList ? 'addClass' : 'removeClass'](element, 'emptyList', !isOldAngular && {
-                            tempClasses: 'emptyList-animate'
+                        $animate[isEmptyList ? 'addClass' : 'removeClass'](element, 'oi-select_emptyList', !isOldAngular && {
+                            tempClasses: 'oi-select_emptyList-animate'
                         });
                     });
 
                     watchers.showLoader = scope.$watch('showLoader', function (isLoading) {
-                        $animate[isLoading ? 'addClass' : 'removeClass'](element, 'loading', !isOldAngular && {
-                            tempClasses: 'loading-animate'
+                        $animate[isLoading ? 'addClass' : 'removeClass'](element, 'oi-select__loading', !isOldAngular && {
+                            tempClasses: 'oi-select__loading-animate'
                         });
                     });
 
@@ -714,8 +731,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
 
                         //limit is reached
                         if (scope.output.length >= multipleLimit) {
-                            blinkClass('limited');
-
+                            blinkClass('oi-select_limited');
                             return;
                         }
 
@@ -880,7 +896,6 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                                 return false; //preventDefaults
                         }
                     };
-
                     scope.getSearchLabel = function (item) {
                         var label = getLabel(item);
 
@@ -910,11 +925,10 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                     element.off('focus').on('focus', focus);
                     element.off('blur').on('blur', blur);
 
-                    function blinkClass(name, delay) {
-                        delay = delay || 150;
+                    function blinkClass(name) {
+                        var delay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 500;
 
                         element.addClass(name);
-
                         $timeout(function () {
                             element.removeClass(name);
                         }, delay);
@@ -1008,7 +1022,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                                 options.newItemFn && !selectedOrder || $timeout(angular.noop); //TODO $applyAsync work since Angular 1.3
                                 resetMatches();
                             }).catch(function () {
-                                blinkClass('invalid-item');
+                                blinkClass('oi-select_invalid-item');
                                 scope.showLoader = false;
                             });
 
@@ -1016,8 +1030,20 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         }
                     }
 
+                    function isEmpty(model) {
+                        if (model === undefined || model === null) {
+                            return false;
+                        } else if (Array.isArray(model)) {
+                            return !model.length;
+                        } else if ((typeof model === 'undefined' ? 'undefined' : _typeof(model)) === "object") {
+                            return !Object.keys(model).length;
+                        }
+                        return !model.length;
+                    }
+
                     function modifyPlaceholder() {
-                        var currentPlaceholder = multiple && exists(ctrl.$modelValue) ? multiplePlaceholder : placeholder;
+                        var currentPlaceholder = placeholder;
+                        if (multiple) currentPlaceholder = isEmpty(ctrl.$modelValue) ? placeholder : multiplePlaceholder;
                         inputElement.attr('placeholder', currentPlaceholder);
                     }
 
@@ -1193,8 +1219,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         }
                     }
 
-                    function resetMatches(options) {
-                        options = options || {};
+                    function resetMatches() {
+                        var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
                         scope.oldQuery = null;
                         scope.backspaceFocus = false; // clears focus on any chosen item for del
@@ -1231,9 +1257,10 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                             }
                             optionGroup.push(input[i]);
                         }
-
                         return optionGroups;
                     }
+
+                    scope.rendered = true;
                 }
             };
         }
@@ -1247,7 +1274,7 @@ angular.module('oi.select').filter('oiSelectGroup', ['$sce', function ($sce) {
     };
 }]).filter('oiSelectCloseIcon', ['$sce', function ($sce) {
     return function (label) {
-        var closeIcon = '<span class="oi-select__remove select-search-list-item_selection-remove">×</span>';
+        var closeIcon = '<span class="oi-select__remove">×</span>';
 
         return $sce.trustAsHtml(label + closeIcon);
     };

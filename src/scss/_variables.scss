@@ -1,33 +1,32 @@
-$oi-select-background: #fff;
+$oi-select-field-background: #fff !default;
 
-$oi-select-border-color: darken($oi-select-background, 20);
+$oi-select-border-color: darken($oi-select-field-background, 20) !default;
+$oi-select-field-box-shadow: 0 1px 1px darken($oi-select-field-background, 10) inset !default;
 
-$oi-select-input-color: darken($oi-select-background, 55);
-$oi-select-input-placeholder-color: darken($oi-select-background, 40);
-$oi-select-input-color--focused: darken($oi-select-background, 65);
-$oi-select-dropdown-border-color: #428bca;
-$oi-select-dropdown-background: $oi-select-background;
+$oi-select-input-color: darken($oi-select-field-background, 55) !default;
+$oi-select-input-placeholder-color: darken($oi-select-field-background, 40) !default;
+$oi-select-input-color--focused: darken($oi-select-field-background, 65) !default;
+$oi-select-dropdown-border-color: #428bca !default;
+$oi-select-dropdown-background: $oi-select-field-background !default;
 
-$oi-select-dropdown-active-background: lighten($oi-select-dropdown-border-color, 0);
-$oi-select-dropdown-active-color: lighten($oi-select-dropdown-border-color, 65);
+$oi-select-option-background: lighten($oi-select-dropdown-border-color, 0) !default;
+$oi-select-option-color: lighten($oi-select-dropdown-border-color, 65) !default;
 
-$oi-select-dropdown-disabled-color: darken($oi-select-background, 20);
+$oi-select-option-disabled-color: darken($oi-select-field-background, 20) !default;
 
-$oi-select-dropdown-multiple-item-border-radius: 20px;
-$oi-select-dropdown-multiple-item-background: lighten($oi-select-dropdown-border-color, 0);
-$oi-select-dropdown-multiple-item-border-color: darken($oi-select-dropdown-border-color, 15);
-$oi-select-dropdown-multiple-item-color: lighten($oi-select-dropdown-border-color, 60);
+$oi-select-item-border-radius: 20px !default;
+$oi-select-item-background: lighten($oi-select-dropdown-border-color, 0) !default;
+$oi-select-item-color: lighten($oi-select-dropdown-border-color, 60) !default;
 
-$oi-select-dropdown-multiple-item-background--hover: darken($oi-select-dropdown-border-color, 5);
-$oi-select-dropdown-multiple-item-border-color--hover: darken($oi-select-dropdown-border-color, 25);
-$oi-select-dropdown-multiple-item-color--hover: lighten($oi-select-dropdown-border-color, 65);
+$oi-select-item-multiple-hover-background-color:  darken($oi-select-dropdown-border-color, 5) !default;
+$oi-select-item-multiple-focus-background-color:  darken($oi-select-dropdown-border-color, 20) !default;
 
-$oi-select-dropdown-multiple-item-border-color--active: darken($oi-select-dropdown-multiple-item-border-color--hover, 10);
-$oi-select-dropdown-multiple-item-background--active: darken($oi-select-dropdown-multiple-item-background--hover, 10);
+$oi-select-disabled-background: darken($oi-select-field-background, 10) !default;
+$oi-select-disabled-border-color: darken($oi-select-field-background, 25) !default;
 
-$oi-select-disabled-background: darken($oi-select-background,10);
-$oi-select-disabled-border-color: darken($oi-select-background,25);
+$oi-select-invalid-color: #e47833 !default;
+$oi-select-invalid-border-color: $oi-select-invalid-color !default;
+$oi-select-border-radius: 5px !default;
 
-$oi-select-invalid-color: #e47833;
-$oi-select-border-radius: 5px;
-
+$oi-select-loader-color: $oi-select-dropdown-border-color !default;
+$oi-select-dropdown-arrow-color: $oi-select-input-color !default;

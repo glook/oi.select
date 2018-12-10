@@ -13,9 +13,8 @@ var stylus = require('gulp-stylus');
 var KarmaServer = require('karma').Server;
 var sass = require('gulp-sass');
 sass.compiler = require('node-sass');
-var autoprefixer = require('autoprefixer-stylus')({
-    browsers: ["ff >= 20", "chrome >= 35", "safari >= 7", "ios >= 7", "android >= 4", "opera >= 12.1", "ie >= 10"]
-});
+var autoprefixer = require('gulp-autoprefixer');
+var runSequence = require('run-sequence');
 
 var babel = require('gulp-babel');
 
@@ -43,10 +42,30 @@ gulp.task('compileStyles', function () {
     return gulp.src(path.join(paths.src, './scss/style.scss'))
         .pipe(sass.sync().on('error', sass.logError))
         .pipe(concat('select.css'))
-        .pipe(gulp.dest(paths.dist))
+        .pipe(gulp.dest(paths.dist));
+});
+
+gulp.task('prefixer', function () {
+    return gulp.src(path.join(paths.dist, './select.css'))
+        .pipe(autoprefixer({
+            browsers: [
+                'firefox >= 20',
+                'chrome >= 35',
+                'safari >= 7',
+                'ios >= 7',
+                'android >= 4',
+                'opera >= 12.1',
+                'ie >= 10'],
+            cascade: false
+        }))
+        .pipe(gulp.dest(paths.dist));
+});
+
+gulp.task('minifyStyles', function () {
+    return gulp.src(path.join(paths.dist, './select.css'))
         .pipe(minifyCss())
         .pipe(rename('select.min.css'))
-        .pipe(gulp.dest(paths.dist))
+        .pipe(gulp.dest(paths.dist));
 });
 
 gulp.task('compileScripts', function () {
@@ -81,8 +100,13 @@ gulp.task('compileScripts', function () {
 });
 
 gulp.task('watch', function () {
+    var directiveAssets = [
+        path.join(paths.src, '**/*.js'),
+        path.join(paths.src, 'template.html')
+    ];
+
     gulp.watch(path.join(paths.src, '**/*.scss'), ['compileStyles']);
-    gulp.watch(path.join(paths.src, '**/*.js'), function () {
+    gulp.watch(directiveAssets, function () {
         var modulePath = gulp.src([
             path.join(paths.src, 'module.js'),
             path.join(paths.src, 'utils.js'),
@@ -108,7 +132,8 @@ gulp.task('test', function (done) {
         configFile: path.join(paths.root, 'karma.conf.js')
     }, done).start();
 });
-
-gulp.task('build', ['clean', 'compileScripts', 'compileStyles']);
+gulp.task('build', function() {
+    runSequence('clean', 'compileScripts', 'compileStyles','prefixer','minifyStyles');
+});
 gulp.task('default', ['webserver', 'watch']);
 

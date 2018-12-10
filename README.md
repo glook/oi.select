@@ -1,6 +1,6 @@
 # oi.select — AngularJS directive of select element
 
-**[Download 0.3.6](https://github.com/glook/oi.select/releases)**
+**[Download 0.4.0](https://github.com/glook/oi.select/releases)**
 
 ## Features
 
@@ -9,7 +9,6 @@
 * Angular 1.2+ without jQuery and other dependencies
 * search options by substring (including the search query to the server)
 * use [Bootstrap](http://getbootstrap.com) styles (but you can use own styles)
-* 17 KB minified
 
 ## Demo
 
