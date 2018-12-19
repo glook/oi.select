@@ -1,6 +1,6 @@
 # oi.select — AngularJS directive of select element
 
-**[Download 0.4.0](https://github.com/glook/oi.select/releases)**
+**[Download 0.4.2](https://github.com/glook/oi.select/releases)**
 
 ## Features
 

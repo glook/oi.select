@@ -27,6 +27,7 @@
     &-label {
       line-height: 23px;
     }
+
     &_empty {
       padding: 6px 12px;
     }
@@ -81,7 +82,7 @@
 
     &_header {
       font-weight: bolder;
-      padding: 6px 15px ;
+      padding: 6px 15px;
       cursor: default;
     }
   }
@@ -217,6 +218,25 @@
         display: none;
       }
     }
+
+    #{$oi-select-input} {
+      padding: 0 20px 0 0 !important;
+
+    }
+
+    #{$oi-select-item-selection} {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 15px 0 0 !important;
+      border-radius: 0;
+    }
+
+    #{$oi-select}__label {
+      #{$oi-select-remove} {
+        position: absolute;
+        right: 10px;
+      }
+    }
   }
 
   &_multiple {
@@ -243,11 +263,11 @@
           margin: 3px 5px 3px 0;
         }
 
-        &:hover{
+        &:hover {
           background: $oi-select-item-multiple-hover-background-color;
         }
 
-        &:focus,&:active{
+        &:focus, &:active {
           background: $oi-select-item-multiple-focus-background-color;
         }
         .oi-select__remove {
@@ -256,7 +276,7 @@
       }
 
     }
-    #{$oi-select-input}{
+    #{$oi-select-input} {
       margin: 0 0 0 5px;
     }
   }
