@@ -54,6 +54,7 @@ angular.module('selectDemo', ['oi.select', 'ngResource', 'hljs', 'gettext' /*, '
             {urlName: 'updateoptions', name: 'Updating options', isNew: true},
             {urlName: 'infiniteScroll', name: 'Infinite scroll', isNew: true},
             {urlName: 'colors', name: 'Color customization', isNew: true},
+            {urlName: 'keepQuery', name: 'Keep query', isNew: true},
             {urlName: 'all', name: 'All'}
         ];
 

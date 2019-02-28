@@ -113,9 +113,9 @@ angular.module('oi.select')
                             threshold = 30,
                             throttle = 500,
                             noMoreItems = false,
-                            offsetTop = 0
+                            offsetTop = 0,
+                            keepQuery = false
                         ;
-
 
                         const isPageVariableExists = () => valuesFnName.match(/\$page/);
 
@@ -184,6 +184,9 @@ angular.module('oi.select')
                             });
                         }
 
+                        if (angular.isDefined(attrs.keepQuery)) {
+                            keepQuery = attrs.keepQuery === 'true';
+                        }
 
                         if (angular.isDefined(attrs.readonly)) {
                             watchers.readonly = scope.$parent.$watch(attrs.readonly, function (value) {
@@ -601,7 +604,7 @@ angular.module('oi.select')
                                 restoreInput();
                             }
 
-                            if (!saveOn('blur')) {
+                            if (!saveOn('blur') && !keepQuery) {
                                 resetMatches();
                             }
                             scope.$evalAsync();
