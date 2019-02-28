@@ -492,7 +492,8 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         threshold = 30,
                         throttle = 500,
                         noMoreItems = false,
-                        offsetTop = 0;
+                        offsetTop = 0,
+                        keepQuery = false;
 
                     var isPageVariableExists = function isPageVariableExists() {
                         return valuesFnName.match(/\$page/);
@@ -559,6 +560,10 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                         $timeout(function () {
                             inputElement[0].focus();
                         });
+                    }
+
+                    if (angular.isDefined(attrs.keepQuery)) {
+                        keepQuery = attrs.keepQuery === 'true';
                     }
 
                     if (angular.isDefined(attrs.readonly)) {
@@ -985,7 +990,7 @@ angular.module('oi.select').directive('oiSelect', ['$document', '$q', '$timeout'
                             restoreInput();
                         }
 
-                        if (!saveOn('blur')) {
+                        if (!saveOn('blur') && !keepQuery) {
                             resetMatches();
                         }
                         scope.$evalAsync();
