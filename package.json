@@ -1,7 +1,7 @@
 {
   "name": "@glook/oi.select",
   "license": "MIT",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "repository": {
     "type": "git",
     "url": "git://github.com/glook/oi.select.git"

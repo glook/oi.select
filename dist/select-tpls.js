@@ -1003,7 +1003,7 @@ var oiSelectDirective = /* @ngInject */
 
 var name = "@glook/oi.select";
 var license = "MIT";
-var version = "0.4.4";
+var version = "0.4.5";
 var repository = {
 	type: "git",
 	url: "git://github.com/glook/oi.select.git"
