@@ -1001,90 +1001,10 @@ var oiSelectDirective = /* @ngInject */
   };
 }];
 
-var name = "@glook/oi.select";
-var license = "MIT";
-var version = "0.4.5";
-var repository = {
-	type: "git",
-	url: "git://github.com/glook/oi.select.git"
-};
-var homepage = "https://github.com/glook/oi.select";
-var devDependencies = {
-	"@babel/core": "^7.3.4",
-	"@babel/preset-env": "^7.3.4",
-	autoprefixer: "^9.5.0",
-	"babel-plugin-angularjs-annotate": "^0.10.0",
-	cssnano: "^4.1.10",
-	"jasmine-core": "3.3.0",
-	"jasmine-jquery": "2.1.1",
-	karma: "4.0.1",
-	"karma-chrome-launcher": "2.2.0",
-	"karma-coverage": "1.1.2",
-	"karma-firefox-launcher": "1.1.0",
-	"karma-ie-launcher": "1.0.0",
-	"karma-jasmine": "2.0.1",
-	"karma-jasmine-jquery": "0.1.1",
-	"karma-ng-html2js-preprocessor": "1.0.0",
-	"karma-opera-launcher": "1.0.0",
-	"karma-phantomjs-launcher": "1.0.4",
-	"karma-sauce-launcher": "2.0.2",
-	lodash: "^4.17.11",
-	"node-sass": "^4.9.4",
-	postcss: "^7.0.14",
-	"postcss-banner": "^3.0.1",
-	rollup: "^1.6.0",
-	"rollup-plugin-babel": "^4.3.2",
-	"rollup-plugin-babel-minify": "^8.0.0",
-	"rollup-plugin-html": "^0.2.1",
-	"rollup-plugin-json": "^3.1.0",
-	"rollup-plugin-livereload": "^1.0.0",
-	"rollup-plugin-sass": "^1.1.0",
-	"rollup-plugin-serve": "^1.0.1",
-	"rollup-watch": "^4.3.1",
-	yargs: "^13.2.2"
-};
-var browser = "index.js";
-var style = "dist/select.min.css";
-var main = "dist/select-tpls.js";
-var peerDependencies = {
-	angular: ">=1.2",
-	"angular-sanitize": ">=1.2"
-};
-var description = "**[Download](https://github.com/glook/oi.select/releases)**";
-var bugs = {
-	url: "https://github.com/glook/oi.select/issues"
-};
-var directories = {
-	doc: "docs"
-};
-var dependencies = {
-};
-var scripts = {
-	build: "node_modules/.bin/rollup -c",
-	start: "node_modules/.bin/rollup -c -w"
-};
-var author = "Andrey Polyakov";
-var json = {
-	name: name,
-	license: license,
-	version: version,
-	repository: repository,
-	homepage: homepage,
-	devDependencies: devDependencies,
-	browser: browser,
-	style: style,
-	main: main,
-	peerDependencies: peerDependencies,
-	description: description,
-	bugs: bugs,
-	directories: directories,
-	dependencies: dependencies,
-	scripts: scripts,
-	author: author
-};
+var version = "0.4.6";
 
 var version$1 = (function () {
-  var full = json.version || '0.0.1';
+  var full = version;
 
   var _full$split = full.split('.'),
       _full$split2 = _slicedToArray(_full$split, 3),
@@ -1148,12 +1068,13 @@ function oiSelectEscapeFactory () {
   };
 }
 
+_ngInjectExport.$inject = ["$document", "$timeout"];
+
 /**
  * Created by: Andrey Polyakov (andrey@polyakov.im)
  */
-function oiUtilsFactory (
 /* @ngInject */
-$document, $timeout) {
+function _ngInjectExport($document, $timeout) {
   /**
    * Check to see if a DOM element is a descendant of another DOM element.
    *
@@ -1440,7 +1361,7 @@ $document, $timeout) {
   };
 }
 
-var oiSelectServices = angular.module('oi.select.services', []).provider('oiSelect', oiSelectProvider).factory('oiSelectEscape', oiSelectEscapeFactory).factory('oiSelectEditItem', oiSelectEditItemFactory).factory('oiUtils', oiUtilsFactory).name;
+var oiSelectServices = angular.module('oi.select.services', []).provider('oiSelect', oiSelectProvider).factory('oiSelectEscape', oiSelectEscapeFactory).factory('oiSelectEditItem', oiSelectEditItemFactory).factory('oiUtils', _ngInjectExport).name;
 
 var oiSelectFilters = angular.module('oi.select.filters', []).filter('oiSelectGroup', ['$sce', function ($sce) {
   return function (label) {

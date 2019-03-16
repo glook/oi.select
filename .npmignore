@@ -2,3 +2,4 @@ docs
 karma.conf.js
 rollup.config.js
 .babelrc
+.idea

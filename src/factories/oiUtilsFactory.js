@@ -2,7 +2,7 @@
  * Created by: Andrey Polyakov (andrey@polyakov.im)
  */
 
-export default function  /* @ngInject */($document, $timeout) {
+export default /* @ngInject */ function  ($document, $timeout) {
     /**
      * Check to see if a DOM element is a descendant of another DOM element.
      *
