@@ -1,4 +1,7 @@
-const throttleFn = function (fn, threshhold, scope) {
+/**
+ * Created by: Andrey Polyakov (andrey@polyakov.im)
+ */
+export default function (fn, threshhold, scope) {
     threshhold || (threshhold = 250);
     var last,
         deferTimer;
@@ -19,5 +22,3 @@ const throttleFn = function (fn, threshhold, scope) {
         }
     };
 };
-
-
