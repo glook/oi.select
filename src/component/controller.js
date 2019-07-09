@@ -13,13 +13,12 @@ import {
 } from '../constants';
 import BaseController from './baseController';
 
-/**
- * Created by: Andrey Polyakov (andrey@polyakov.im)
- */
 export default class Controller extends BaseController {
     /* @ngInject */
-    constructor($document, $q, $timeout, $parse, $interpolate, $injector, $filter, $animate, oiUtils, oiSelect, $element, $scope) {
-        super($document, $q, $timeout, $parse, $interpolate, $injector, $filter, $animate, oiUtils, oiSelect, $element, $scope);
+    constructor($q, $timeout, $parse, $injector, $filter, oiUtils, oiSelect, $element, $scope) {
+        super($q, $timeout, $parse, $injector, $filter, oiUtils, oiSelect, $element, $scope);
+        this._modelParams = null;
+        this._selectOptions = null;
         this.multiple = false;
         this.placeholder = '';
         this.query = '';
@@ -33,10 +32,11 @@ export default class Controller extends BaseController {
         this.matchesWereReset = false;
         this.page = 0;
         this.focused = false;
-
+        this.matchesWereReset = false;
         // Режим редактирования
         this.editMode = false;
-
+        this.ngDisable = false;
+        this.editItemIsCorrected = false;
         this.debouncedMatches = null;
         this.removedItem = null;
         const vm = this;
@@ -51,10 +51,14 @@ export default class Controller extends BaseController {
                         target.groupsLength = vm.getItemsPosition(value);
                     } else {
                         target.groupsLength = {};
+                        target.collection = [];
                     }
                 }
                 target[key] = value;
-                if (!vm.isOpen) {
+
+                if (!target.collection.length) {
+                    vm.isOpen = false;
+                } else if (!vm.isOpen && !vm.ngDisable) {
                     vm.isOpen = true;
                 }
             },
@@ -62,21 +66,20 @@ export default class Controller extends BaseController {
                 return target[key];
             },
         });
-
+        this.backspaceFocus = false;
         this.isEmptyList = true;
     }
-
 
     $onInit = () => {
         this.initEvents();
         this.registerFilters();
         this.registerOiOptionsAttributeElements();
-
-        this.debouncedMatches = _debounce(this.options.debounce, (query = '', append = false, selectedAs = null) => this.fetchMatches(query, append, selectedAs));
+        this.debouncedMatches = _debounce(this.selectOptions.debounce, (query = '', append = false, selectedAs = null) => this.fetchMatches(query, append, selectedAs));
+        this.editItemIsCorrected = this.selectOptions.editItem === 'correct';
     };
 
     /**
-     * Обновляем значение
+     * Обновляем значение исходя из значения ngModel
      */
     setValue = () => {
         const {
@@ -85,7 +88,6 @@ export default class Controller extends BaseController {
         } = this;
         if (ngModel) {
             this.editMode = false;
-
             if (multiple) {
                 this.value = [].concat(ngModel);
             } else {
@@ -102,7 +104,7 @@ export default class Controller extends BaseController {
         this._$scope.$watch(() => this.ngModel, () => this.setValue());
     };
 
-    $onChange = () => {
+    $onChanges = () => {
         console.log('change');
     };
 
@@ -261,45 +263,67 @@ export default class Controller extends BaseController {
 
     registerFilters = () => {
         const {
-            options: {
-                searchFilter = '',
-                dropdownFilter = '',
+            selectOptions: {
                 listFilter = '',
-                groupFilter = '',
+                newItemFn,
+                newItemModel,
+                removeItemFn,
             },
+            editItem,
         } = this;
 
-        const [searchFilterName, searchFilterOptions] = searchFilter.split(':');
-        const [dropdownFilterName, dropdownFilterOptions] = dropdownFilter.split(':');
         const [listFilterName, listFilterOptions] = listFilter.split(':');
-        const [groupFilterName, groupFilterOptions] = groupFilter.split(':');
 
-        this.searchFilter = this._$filter(searchFilterName);
-        this.searchFilterOptionsFn = this._$parse(searchFilterOptions);
-        this.dropdownFilter = this._$filter(dropdownFilterName);
-        this.dropdownFilterOptionsFn = this._$parse(dropdownFilterOptions);
+
         this.listFilter = this._$filter(listFilterName);
         this.listFilterOptionsFn = this._$parse(listFilterOptions);
-        this.groupFilter = this._$filter(groupFilterName);
-        this.groupFilterOptionsFn = this._$parse(groupFilterOptions);
+        if (newItemFn || newItemModel) {
+            if (newItemFn) {
+                this.newItemFn = this._$parse(newItemFn);
+            } else {
+                /* eslint-disable-next-line */
+                const newItemModelFn = this._$parse(newItemModel);
+                this.newItemFn = (scope, locals) => newItemModelFn(locals) || locals.query;
+            }
+        }
+
+        this.editItemFn = editItem
+            ? this._$injector.get(editItem)
+            : angular.noop;
+
+        this.removeItemFn = this._$parse(removeItemFn);
     };
 
-    /**
-     * Получаем базовые опции + опции указанные в аттрибуте oiSelectOptions
-     * @return {{cleanModel}}
-     */
-    get options() {
-        const {oiSelectOptions} = this;
-        const options = {
-            cleanModel: oiSelectOptions.newItem === 'prompt',
-            ...this._oiSelect.options,
-            ...oiSelectOptions,
-        };
-        return {
-            ...options,
 
-        };
+    get selectOptions() {
+        if (!this._selectOptions) {
+            const {
+                oiSelectOptions,
+                _oiSelect: {
+                    options,
+                },
+            } = this;
+            this._selectOptions = {
+                cleanModel: oiSelectOptions.newItem === 'prompt',
+                ...options,
+                ...oiSelectOptions,
+            };
+        }
+        return this._selectOptions;
     }
+
+    get modelParams() {
+        if (!this._modelParams) {
+            this._modelParams = this.oiOptionsAttribute;
+        }
+        return this._modelParams;
+    }
+
+    cleanOiOptions = () => {
+        this._modelParams = null;
+        this._selectOptions = null;
+    };
+
 
     /**
      * Получаем текущий элемент
@@ -333,38 +357,38 @@ export default class Controller extends BaseController {
         return this._$scope.$parent;
     }
 
-    onChangeQuery = () => {
+    onChangeQuery = () => setTimeout(() => {
         const {
-            options: {
+            selectOptions: {
                 minlength,
             },
             query,
             oldQuery,
-            matchesWereReset,
             multiple,
-            getMatches,
+            matchesWereReset,
+            dropdownElement,
         } = this;
 
-        this.oldQuery = query;
-        // console.log({oldQuery, query});
-
         if (query.length < minlength) return false;
+        console.log('on change');
+        console.log(query !== oldQuery && (!oldQuery || query) && !matchesWereReset);
 
-        if (query !== oldQuery) {
+        console.log({query});
+        if (query !== oldQuery && (!oldQuery || query) && !matchesWereReset) {
+            dropdownElement.scrollTop = 0;
             if (query) {
-                console.log('debouncedMatches', query);
+                console.log('sss');
+
                 this.debouncedMatches(query);
                 this.oldQuery = null;
             } else if (multiple) {
-                console.log('reset');
                 this.matchesWereReset = true;
             }
         }
-        this.matchesWereReset = true;
+        this.matchesWereReset = false;
 
-        // console.log('query is changed');
         return true;
-    };
+    }, 30);
 
     onKeyDown = (event) => {
         const {
@@ -396,6 +420,9 @@ export default class Controller extends BaseController {
                 break;
             }
             case 'ArrowDown': {
+                /**
+                 * @TODO исправить, изначально выбирается второй элемент
+                 */
                 const currentSelectorPosition = this.selectorPosition
                     ? this.selectorPosition
                     : firstElementIndex;
@@ -425,30 +452,61 @@ export default class Controller extends BaseController {
                 saveOn(SAVE_ON_ENTER);
                 event.preventDefault();
                 break;
-            case 'Backspace':
-                break;
-            case 'Escape':
+            case 'Backspace': {
+                const {
+                    query,
+                    multiple,
+                    editItem,
+                    value,
+                    removeItem,
+                } = this;
+                if (!query.length) {
+                    if (!multiple || editItem) {
+                        this.backspaceFocus = true;
+                    }
 
-                if (!this.multiple) {
-                    this.resetInput();
-
-                    if (this.options.cleanModel) {
-                        // @todo
+                    if (this.backspaceFocus && value && (!multiple || value.length)) {
+                        removeItem(value.length - 1);
+                        if (editItem) {
+                            event.preventDefault();
+                        }
                     }
                 }
-                this.resetMatches({cleanQuery: true});
-                break;
 
+                break;
+            }
+            case 'Escape': {
+                const {
+                    multiple,
+                    resetInput,
+                    selectOptions: {
+                        cleanModel,
+                    },
+                    resetMatches,
+                    removedItem,
+                } = this;
+
+                if (!multiple) {
+                    resetInput();
+
+                    if (cleanModel) {
+                        this.ngModel = removedItem;
+                    }
+                }
+                resetMatches({cleanQuery: true});
+                break;
+            }
             case 'ArrowLeft':
             case 'ArrowRight':
                 break;
-            default:
-                console.log('default');
+            default: {
                 if (!this.editMode) {
                     this.clearInputField();
                 }
-                this.resetMatches();
+
+                this.backspaceFocus = false;
                 return false;
+            }
         }
         return true;
     };
@@ -467,7 +525,7 @@ export default class Controller extends BaseController {
     };
 
 
-    __getValueWithCallback = (item, callbackFn) => this.getValue(this.oiOptionsAttribute.valueName, item, this, callbackFn);
+    __getValueWithCallback = (item, callbackFn, scope = this) => this.getValue(this.oiOptionsAttribute.valueName, item, scope, callbackFn);
 
     getItemName = item => this.__getValueWithCallback(item, this.itemNameFn);
 
@@ -479,48 +537,13 @@ export default class Controller extends BaseController {
 
     getGroupName = item => this.__getValueWithCallback(item, this.groupByFn) || '';
 
-    getFilter = list => this.__getValueWithCallback(list, this.filterFn);
-
-    getDropdownLabel = (item) => {
+    getFilter = (list) => {
         const {
-            getItemLabel,
-            element,
-            dropdownFilter,
-            dropdownFilterOptionsFn,
-            oldQuery,
-            query,
+            collectionFnName,
+            getValue,
+            filterFn,
         } = this;
-        const label = getItemLabel(item);
-        return dropdownFilter(label, oldQuery || query, item, dropdownFilterOptionsFn(this), element);
-    };
-
-    getGroupLabel = (group, items) => {
-        const {
-            element,
-            groupFilter,
-            groupFilterOptionsFn,
-            oldQuery,
-            query,
-        } = this;
-        return groupFilter(group, oldQuery || query, items, groupFilterOptionsFn(this), element);
-    };
-
-    /**
-     * Получаем label элмента для вывода в поисковой строке
-     * @param item
-     * @return {*}
-     */
-    getSearchLabel = (item) => {
-        const {
-            getItemLabel,
-            element,
-            searchFilter,
-            searchFilterOptionsFn,
-            oldQuery,
-            query,
-        } = this;
-        const label = getItemLabel(item);
-        return searchFilter(label, oldQuery || query, item, searchFilterOptionsFn(this), element);
+        return getValue(collectionFnName, list, this, filterFn);
     };
 
     getValue = (valueName, item, scope, getter) => {
@@ -542,7 +565,6 @@ export default class Controller extends BaseController {
         this.showLoader = true;
         this.isEmptyList = false;
         this.oldQuery = null;
-        console.log('fetchMatches');
         return valuesFn(parentScope, {
             $query: query,
             $selectedAs: selectedAs,
@@ -561,9 +583,16 @@ export default class Controller extends BaseController {
      */
     setMatches = (values = [], appendItems = false) => {
         if (Array.isArray(values)) {
-            if (!values.length) this.isEmptyList = true;
+            const {
+                groupMatches,
+                filterMatches,
+            } = this;
+
+            const filteredMatches = filterMatches(values);
+
+            if (!filteredMatches.length) this.isEmptyList = true;
             // получаем сгруппированные элементы
-            const groupedMatches = this.groupMatches(values);
+            const groupedMatches = groupMatches(filteredMatches);
             // Объединяем старые и новые элементы
             if (appendItems) {
                 const [currCollection, currMatches] = [
@@ -571,15 +600,42 @@ export default class Controller extends BaseController {
                     this.groups.matches,
                 ];
                 this.groups.matches = mergeFn(currMatches, groupedMatches);
-                this.groups.collection = currCollection.concat(values);
+                this.groups.collection = currCollection.concat(filteredMatches);
             } else {
                 // перезаписываем
                 this.groups.matches = groupedMatches;
-                this.groups.collection = values;
+                this.groups.collection = filteredMatches;
             }
             return new Promise(resolve => resolve(true));
         }
         return new Promise(resolve => resolve(false));
+    };
+
+    /**
+     * Фильтруем результаты
+     * @param values
+     * @return {*}
+     */
+    filterMatches = (values) => {
+        const {
+            listFilterOptionsFn,
+            listFilter,
+            parentScope,
+            element,
+            value,
+            query,
+            getItemLabel,
+            getItemTrackBy,
+            getFilter,
+            multiple,
+        } = this;
+        const data = multiple
+            ? value
+            : [];
+
+        const filteredList = listFilter(values, query, getItemLabel, listFilterOptionsFn(parentScope), element);
+        const withoutIntersection = this._oiUtils.intersection(filteredList, data, getItemTrackBy, getItemTrackBy, true);
+        return getFilter(withoutIntersection);
     };
 
     /**
@@ -609,79 +665,85 @@ export default class Controller extends BaseController {
             targetElement = targetElement.parentNode;
         } while (targetElement);
 
-        return this.onBlur(event);
+        return this.onBlur();
     };
 
-    onBlur = (event) => {
-        this.focused = false;
-        if (this.isOpen) {
-            this.isOpen = false;
-            this.saveOn(SAVE_ON_BLUR);
-
-            this.resetMatches({cleanQuery: true});
-            this.resetInput();
-            // if (!this.options.closeList) {
-            //     this.isOpen = true;
-            // } else {
-            //     this.isOpen = false;
-            // }
+    onBlur = () => {
+        if (this.focused) {
+            const {
+                selectOptions: {
+                    keepQuery,
+                },
+                multiple,
+            } = this;
+            this.focused = false;
+            if (!multiple) this.resetInput();
+            if (!this.saveOn(SAVE_ON_BLUR)) {
+                this.resetMatches({cleanQuery: !keepQuery});
+            }
             this.$apply();
         }
     };
 
     onFocus = (event) => {
         const {
-            target,
             target: {
                 nodeName,
             },
+            target,
         } = event;
         const {
             query,
             isOpen,
-            options: {
-                closeList,
-                minlength,
-            },
             fetchMatches,
+            element,
+            editMode,
+            removeItem,
+            resetMatches,
+            editItemIsCorrected,
+            multipleLimit,
+            value,
         } = this;
-        this.focused = true;
-        console.log({target});
-        if (query.length < minlength) return false;
-        if (this._oiUtils.contains(this.element, event.target, 'disabled')) return false;
 
-        if (!isOpen && nodeName !== 'INPUT') {
-            this.editMode = true;
-            setTimeout(() => this.inputElement.focus(), 10);
+        const {
+            closeList,
+            minlength,
+            editItem,
+        } = this.selectOptions;
+        console.log({target});
+        this.focused = true;
+        // query length less then minlength
+        if (query.length < minlength) return false;
+        // option is disabled
+        if (this._oiUtils.contains(element, target, 'disabled')) return false;
+
+        // limit is reached
+        if (value.length >= multipleLimit && this._oiUtils.contains(element, target, 'select-dropdown')) return false;
+
+        if (!editMode) {
+            removeItem(0); // because click on border (not on chosen item) doesn't remove chosen element
         }
 
-        console.log({closeList});
-
-
         if (isOpen && closeList && (nodeName !== 'INPUT' || !query.length)) {
-            // this.resetMatches();
-            this.inputElement.focus();
-            // console.log('res');
+            resetMatches({cleanQuery: editItem && !editItemIsCorrected});
+            this.$apply();
         } else {
-            this.editMode = true;
             fetchMatches(query);
         }
 
+        this.$apply();
         return true;
     };
-
 
     clearInputField = () => {
         this.editMode = true;
     };
 
     resetInput = () => {
-        const modelExists = this.exists(this.ngModel);
         this.editMode = !this.exists(this.ngModel);
     };
 
     resetMatches = (options = {}) => {
-        console.log('resetMatches');
         this.oldQuery = null;
         this.groups.matches = {};
         this.showLoader = false;
@@ -718,14 +780,19 @@ export default class Controller extends BaseController {
             getItemTrackBy,
             multipleLimit,
             getGroupName,
-            groups: {
-                matches,
-            },
             multiple,
             itemNameFn,
             resetInput,
+            selectOptions: {
+                closeList,
+            },
+            groups: {
+                matches,
+            },
+            query,
+            oldQuery,
         } = this;
-
+        this.oldQuery = query;
         // Если этот элемент уже присутсвует в value, пропускаем
         if (multiple && this._oiUtils.intersection(value, [option], getItemTrackBy, getItemTrackBy).length) return false;
 
@@ -735,20 +802,87 @@ export default class Controller extends BaseController {
             return false;
         }
         const optionGroupName = getGroupName(option);
-        console.log({matches});
-
+        const optionGroup = matches[optionGroupName] || [];
         const optionValue = itemNameFn ? this.getItemName(option) : option;
-        console.log({optionValue});
+
+        optionGroup.splice(optionGroup.indexOf(option), 1);
+        console.log({optionGroup});
         if (multiple) {
-// @TODO Добавить
+            const {
+                ngModel,
+            } = this;
+            this.ngModel = Array.isArray(ngModel)
+                ? ngModel.concat([optionValue])
+                : [optionValue];
+            this.value = value.concat([optionValue]);
         } else {
             this.ngModel = optionValue;
             this.value = [optionValue];
             resetInput();
         }
 
-        this.isOpen = false;
-        this.inputElement.focus();
+        if (!multiple && !closeList) {
+            this.resetMatches({cleanQuery: true});
+        }
+        this.valueChangedManually();
+        this.oldQuery = oldQuery || query;
+        this.query = '';
+        this.backspaceFocus = false;
+        this.$apply();
+        return false;
+    };
+
+    removeItem = (index) => {
+        const {
+            value,
+            multiple,
+            ngModel,
+            selectOptions: {
+                cleanModel,
+                closeList,
+            },
+            backspaceFocus,
+            oldQuery,
+            editItemFn,
+            resetMatches,
+            removeItemFn,
+            editMode,
+        } = this;
+
+        this.removedItem = multiple ? ngModel[index] : ngModel;
+        removeItemFn(this.parentScope, {$item: this.removedItem});
+
+        if (!multiple && editMode) return false;
+
+        if (this.multiple) {
+            const newValue = [
+                ...value.slice(0, index),
+                ...value.slice(index + 1),
+            ];
+            this.value = newValue;
+            this.ngModel = newValue;
+        } else {
+            this.clearInputField();
+            if (cleanModel) {
+                this.ngModel = undefined;
+            }
+        }
+
+        if (multiple || !backspaceFocus) {
+            const {
+                removedItem,
+                getItemLabel,
+                editItemIsCorrected,
+                element,
+            } = this;
+            this.query = editItemFn(removedItem, oldQuery, getItemLabel, editItemIsCorrected, element) || '';
+        }
+
+        if (multiple && closeList) {
+            resetMatches();
+        }
+
+        this.$apply();
         return true;
     };
 
@@ -784,6 +918,7 @@ export default class Controller extends BaseController {
      * Рефрешим view
      * @return {*}
      */
+    /* eslint-disable-next-line */
     $apply = () => this._$scope.$applyAsync();
 
     /**
@@ -791,7 +926,7 @@ export default class Controller extends BaseController {
      * @return {string[]}
      */
     get saveTriggers() {
-        return this.options.saveTrigger.split(' ');
+        return this.selectOptions.saveTrigger.split(' ');
     }
 
     /**
@@ -810,32 +945,37 @@ export default class Controller extends BaseController {
             selectorPosition,
             isAvailableSaveTrigger,
             getItemDisabled,
-            options: {
+            selectOptions: {
                 newItem,
             },
-            setOption,
+            newItemFn,
         } = this;
-
-        const item = collection[selectorPosition];
+        console.log({triggerName});
+        const item = collection[selectorPosition] || false;
         const isNewItem = newItem && query;
-        const isItemDisabled = item && getItemDisabled(item);
-
-        console.log({
-
-            item,
-            isNewItem,
-            isItemDisabled,
-
-        });
-
-        if (isAvailableSaveTrigger(triggerName) && (isNewItem || !isItemDisabled)) {
-            console.log('try to save');
+        const isItemDisabled = !!getItemDisabled(item);
+        if (isAvailableSaveTrigger(triggerName) && (isNewItem || (item && !isItemDisabled))) {
             this.selectorPosition = null;
+            if (newItemFn && isNewItem) {
+                const newItemValue = newItemFn(this.parentScope, {$query: query});
+                this.addItem(newItemValue);
+            } else {
+                this.addItem(item);
+            }
+            this.resetMatches({cleanQuery: true});
 
-            this.addItem(item);
+            this.$apply();
+            return true;
         }
+
+        return false;
     };
 
+    /**
+     *
+     * @param value
+     * @return {*[]}
+     */
     compact = (value = []) => {
         const {
             itemNameFn,
@@ -849,9 +989,17 @@ export default class Controller extends BaseController {
             compactValue = [];
         }
 
-        return compactValue.filter(item => item && (Array.isArray(item) && item.length || itemNameFn || getItemLabel(item)));
+        return compactValue.filter((item) => {
+            const itemLength = Array.isArray(item) && item.length;
+            return item && (itemLength || itemNameFn || getItemLabel(item));
+        });
     };
 
+    /**
+     *
+     * @param value
+     * @return {boolean}
+     */
     exists = value => !!this.compact(value).length;
 
     /**
@@ -864,9 +1012,26 @@ export default class Controller extends BaseController {
             multiplePlaceholder,
             multiple,
         } = this;
-        //@TODO Добавить логику если модель не пуста
+        // @TODO Добавить логику если модель не пуста
         if (multiple) return multiplePlaceholder;
 
         return placeholder;
+    }
+
+
+    valueChangedManually = () => {
+        // case: clean model; prompt + editItem: 'correct'; initial value = defined/undefined
+        this.editItemIsCorrected = false;
+    };
+
+    get editItem() {
+        const {
+            selectOptions: {
+                editItem,
+            },
+        } = this;
+        return editItem === true || editItem === 'correct'
+            ? 'oiSelectEditItem'
+            : editItem;
     }
 }

@@ -1,3 +1,4 @@
+import commonjs from 'rollup-plugin-commonjs';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
 import babel from 'rollup-plugin-babel';
@@ -11,6 +12,7 @@ import minify from 'rollup-plugin-babel-minify';
 import json from 'rollup-plugin-json';
 import cssnano from 'cssnano';
 import postcssBanner from 'postcss-banner';
+import nodeResolve from 'rollup-plugin-node-resolve';
 import packageJson from './package.json';
 
 const {version} = packageJson;
@@ -21,11 +23,16 @@ let plugins = [
     babel({
         exclude: 'node_modules/**',
     }),
+    nodeResolve({
+        browser: true,
+        mainFields: ['module', 'main'],
+    }),
+    commonjs(),
     sass({
         output: 'dist/select.css',
         processor: css => postcss([autoprefixer, postcssBanner({banner: bannerText, inline: true})])
             .process(css, {from: undefined})
-            .then(result => result.css)
+            .then(result => result.css),
     }),
     html(),
     json(),
@@ -41,7 +48,7 @@ if (isDev) {
             port: 3000,
         }),
         livereload('dist'),
-    ])
+    ]);
 }
 let entry = [
     {
@@ -49,7 +56,7 @@ let entry = [
         output: {
             name: 'select',
             file: 'dist/select-tpls.js',
-            format: 'cjs'
+            format: 'cjs',
         },
         plugins,
     },
@@ -68,7 +75,7 @@ if (!isDev) {
             output: 'dist/select.min.css',
             processor: css => postcss([autoprefixer, cssnano, postcssBanner({banner: bannerText, inline: true})])
                 .process(css, {from: undefined})
-                .then(result => result.css)
+                .then(result => result.css),
         }),
     ]);
     entry = entry.concat([
@@ -86,7 +93,7 @@ if (!isDev) {
             output: {
                 name: 'select',
                 file: 'dist/select.min.js',
-                format: 'cjs'
+                format: 'cjs',
             },
             plugins: minifyPlugins,
         },
@@ -95,7 +102,7 @@ if (!isDev) {
             output: {
                 name: 'select',
                 file: 'dist/select-tpls.min.js',
-                format: 'cjs'
+                format: 'cjs',
             },
             plugins: minifyPlugins,
         },

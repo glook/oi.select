@@ -3,6 +3,7 @@
     "@babel/preset-env"
   ],
   "plugins": [
-    "angularjs-annotate"
+    "angularjs-annotate",
+    "@babel/plugin-proposal-class-properties",
   ]
 }

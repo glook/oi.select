@@ -1,0 +1,35 @@
+<ul class="oi-select__items"
+    ng-class="{'oi-select__items_empty':!vm.value.length,'oi-select__items_loading':vm.showLoader}">
+    <li
+            class="oi-select__item oi-select__item_selection"
+            ng-class="{focused: vm.backspaceFocus && $last}"
+            ng-click="vm.onRemove({index: $index})"
+            ng-hide="vm.editMode && !vm.multiple"
+            ng-repeat="item in vm.value track by $index"
+    >
+            <span
+                    class="oi-select__label"
+                    ng-bind-html="vm.getSearchLabel(item)"
+            ></span>
+    </li>
+    <li
+            class="oi-select__item oi-select__input"
+            ng-class="{'oi-select__item_hide': !vm.editMode}"
+
+    >
+        <input
+                autocomplete="off"
+                class="oi-select__input_element"
+                maxlength="{{vm.selectOptions.maxlength}}"
+                ng-change="vm.onChange()"
+                ng-keydown="vm.onKeyDown({event: $event})"
+                ng-keyup="vm.onKeyUp({event: $event})"
+                ng-model="vm.query"
+                placeholder="{{vm.placeholder}}"/>
+    </li>
+    <li
+            class="oi-select__item oi-select__loader"
+            ng-show="vm.showLoader"
+    >
+    </li>
+</ul>

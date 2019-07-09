@@ -1,7 +1,7 @@
 {
   "name": "@glook/oi.select",
   "license": "MIT",
-  "version": "0.4.6",
+  "version": "0.5.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/glook/oi.select.git"
@@ -9,13 +9,19 @@
   "homepage": "https://github.com/glook/oi.select",
   "devDependencies": {
     "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
     "@babel/preset-env": "^7.3.4",
-    "autoprefixer": "^9.5.0",
+    "autoprefixer": "^9.6.0",
+    "babel-eslint": "^10.0.2",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "cssnano": "^4.1.10",
-    "jasmine-core": "3.3.0",
+    "deepmerge": "^3.3.0",
+    "eslint": "^6.0.1",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.0",
+    "jasmine-core": "3.4.0",
     "jasmine-jquery": "2.1.1",
-    "karma": "4.0.1",
+    "karma": "4.1.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-coverage": "1.1.2",
     "karma-firefox-launcher": "1.1.0",
@@ -27,26 +33,29 @@
     "karma-phantomjs-launcher": "1.0.4",
     "karma-sauce-launcher": "2.0.2",
     "lodash": "^4.17.11",
-    "node-sass": "^4.9.4",
-    "postcss": "^7.0.14",
+    "node-sass": "^4.12.0",
+    "postcss": "^7.0.17",
     "postcss-banner": "^3.0.1",
-    "rollup": "^1.6.0",
-    "rollup-plugin-babel": "^4.3.2",
-    "rollup-plugin-babel-minify": "^8.0.0",
+    "rollup": "^1.16.4",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-babel-minify": "^9.0.0",
+    "rollup-plugin-commonjs": "^10.0.1",
     "rollup-plugin-html": "^0.2.1",
-    "rollup-plugin-json": "^3.1.0",
-    "rollup-plugin-livereload": "^1.0.0",
-    "rollup-plugin-sass": "^1.1.0",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-livereload": "^1.0.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-sass": "^1.2.2",
     "rollup-plugin-serve": "^1.0.1",
     "rollup-watch": "^4.3.1",
-    "yargs": "^13.2.2"
+    "throttle-debounce": "^2.1.0",
+    "yargs": "^13.2.4"
   },
   "browser": "index.js",
   "style": "dist/select.min.css",
   "main": "dist/select-tpls.js",
   "peerDependencies": {
-    "angular": ">=1.2",
-    "angular-sanitize": ">=1.2"
+    "angular": ">=1.5",
+    "angular-sanitize": ">=1.5"
   },
   "description": "**[Download](https://github.com/glook/oi.select/releases)**",
   "bugs": {
@@ -55,7 +64,6 @@
   "directories": {
     "doc": "docs"
   },
-  "dependencies": {},
   "scripts": {
     "build": "node_modules/.bin/rollup -c",
     "start": "node_modules/.bin/rollup -c -w"

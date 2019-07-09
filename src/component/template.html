@@ -7,63 +7,37 @@
      }"
 >
     <div class="oi-select__field">
-        <ul class="oi-select__items"
-            ng-class="{'oi-select__items_empty':!vm.value.length,'oi-select__items_loading':vm.showLoader}">
-            <li
-                    class="oi-select__item oi-select__item_selection"
-                    ng-class="{focused: vm.backspaceFocus && $last}"
-                    ng-click="vm.removeItem($index)"
-                    ng-hide="vm.editMode"
-                    ng-repeat="item in vm.value track by $index"
-            >
-            <span
-                    class="oi-select__label"
-                    ng-bind-html="vm.getSearchLabel(item)"
-            ></span>
-            </li>
-            <li
-                    class="oi-select__item oi-select__input"
-                    ng-hide="!vm.editMode"
-            >
-                <input
-                        autocomplete="off"
-                        class="oi-select__input_element"
-                        maxlength="{{vm.options.maxlength}}"
-                        ng-change="vm.onChangeQuery()"
-                        ng-keydown="vm.onKeyDown($event)"
-                        ng-keyup="vm.onKeyUp($event)"
-                        ng-model="vm.query"
-                        ng-readonly="vm.readonly"
-                        placeholder="{{vm.placeholderValue}}"/>
-            </li>
-            <li
-                    class="oi-select__item oi-select__loader"
-                    ng-show="vm.showLoader"
-            >
-            </li>
-        </ul>
-    </div>
-    <div class="oi-select__dropdown" ng-if="vm.isOpen">
-        <ul
-                class="oi-select__optgroup" ng-if="vm.isOpen"
-                ng-init="groupPosition = $index;"
-                ng-repeat="(group, options) in vm.groups.matches"
+        <oi-select-field
+                backspace-focus="vm.backspaceFocus"
+                edit-mode="vm.editMode"
+                element="vm.element"
+                model-params="vm.modelParams"
+                multiple="vm.multiple"
+                old-query="vm.oldQuery"
+                on-change="vm.onChangeQuery()"
+                on-key-down="vm.onKeyDown(event)"
+                on-key-up="vm.onKeyUp(event)"
+                on-remove="vm.removeItem(index)"
+                placeholder="vm.placeholderValue"
+                query="vm.query"
+                select-options="vm.selectOptions"
+                show-loader="vm.showLoader"
+                value="vm.value"
         >
-            <div
-                    class="oi-select__optgroup_header"
-                    ng-bind-html="vm.getGroupLabel(group, options)"
-                    ng-if="group && options.length"
-            ></div>
-            <li
-                    class="oi-select__option"
-                    ng-bind-html="vm.getDropdownLabel(option)"
-                    ng-class="{'active': vm.selectorPosition === vm.groups.groupsLength[group] + $index, 'disabled': isDisabled, 'ungroup': !group}"
-                    ng-click="isDisabled || vm.addItem(option)"
-                    ng-init="isDisabled = vm.getItemDisabled(option)"
-                    ng-mouseenter="vm.setItemSelection(vm.groups.groupsLength[group] + $index)"
-                    ng-repeat="option in options"
-            >
-            </li>
-        </ul>
+        </oi-select-field>
+    </div>
+
+    <div class="oi-select__dropdown" ng-show="vm.isOpen">
+        <oi-select-dropdown
+                element="vm.element"
+                groups="vm.groups"
+                hovered-element="vm.selectorPosition"
+                model-params="vm.modelParams"
+                on-hover="vm.setItemSelection(index)"
+                on-select="vm.addItem(item)"
+                options="vm.options"
+                query="vm.oldQuery || vm.query"
+                select-options="vm.selectOptions"
+        ></oi-select-dropdown>
     </div>
 </div>
