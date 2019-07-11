@@ -12,6 +12,7 @@ import minify from 'rollup-plugin-babel-minify';
 import json from 'rollup-plugin-json';
 import cssnano from 'cssnano';
 import postcssBanner from 'postcss-banner';
+import collectSass from 'rollup-plugin-collect-sass';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import packageJson from './package.json';
 
@@ -28,6 +29,7 @@ let plugins = [
         mainFields: ['module', 'main'],
     }),
     commonjs(),
+    collectSass(),
     sass({
         output: 'dist/select.css',
         processor: css => postcss([autoprefixer, postcssBanner({banner: bannerText, inline: true})])
