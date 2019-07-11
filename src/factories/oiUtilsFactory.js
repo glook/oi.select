@@ -2,7 +2,7 @@
  * Created by: Andrey Polyakov (andrey@polyakov.im)
  */
 
-export default /* @ngInject */ function  ($document, $timeout) {
+export default /* @ngInject */ function ($document, $timeout) {
     /**
      * Check to see if a DOM element is a descendant of another DOM element.
      *
@@ -12,20 +12,20 @@ export default /* @ngInject */ function  ($document, $timeout) {
      * @returns {boolean}
      */
     function contains(container, contained, className) {
-        var current = contained;
+        let current = contained;
 
         while (current && current.ownerDocument && current.nodeType !== 11) {
             if (className) {
                 if (current === container) {
                     return false;
                 }
-                if (current.className.indexOf(className) >= 0) { //current.classList.contains(className) doesn't work in IE9
+
+                const currentClassName = current.className;
+                if (typeof currentClassName === 'string' && currentClassName.indexOf(className) >= 0) { // current.classList.contains(className) doesn't work in IE9
                     return true;
                 }
-            } else {
-                if (current === container) {
-                    return true;
-                }
+            } else if (current === container) {
+                return true;
             }
             current = current.parentNode;
         }
@@ -41,7 +41,9 @@ export default /* @ngInject */ function  ($document, $timeout) {
      * @returns {function} deregistration function for listeners.
      */
     function bindFocusBlur(element, inputElement) {
-        var isFocused, isMousedown, isBlur;
+        let isFocused;
+        let isMousedown;
+        let isBlur;
 
         $document[0].addEventListener('click', clickHandler, true);
         element[0].addEventListener('mousedown', mousedownHandler, true);
@@ -49,7 +51,7 @@ export default /* @ngInject */ function  ($document, $timeout) {
         inputElement.on('focus', focusHandler);
 
         function blurHandler(event) {
-            if (event && event.target.nodeName !== 'INPUT') return; //for IE
+            if (event && event.target.nodeName !== 'INPUT') return; // for IE
 
             isBlur = false;
             isFocused = false;
@@ -59,8 +61,8 @@ export default /* @ngInject */ function  ($document, $timeout) {
                 return;
             }
 
-            $timeout(function () {
-                element.triggerHandler('blur'); //conflict with current live cycle (case: multiple=none + tab)
+            $timeout(() => {
+                element.triggerHandler('blur'); // conflict with current live cycle (case: multiple=none + tab)
             });
         }
 
@@ -68,8 +70,8 @@ export default /* @ngInject */ function  ($document, $timeout) {
             if (!isFocused) {
                 isFocused = true;
 
-                $timeout(function () {
-                    element.triggerHandler('focus'); //conflict with current live cycle (case: multiple=none + tab)
+                $timeout(() => {
+                    element.triggerHandler('focus'); // conflict with current live cycle (case: multiple=none + tab)
                 });
             }
         }
@@ -81,15 +83,15 @@ export default /* @ngInject */ function  ($document, $timeout) {
         function clickHandler(event) {
             isMousedown = false;
 
-            var activeElement = event.target;
-            var isSelectElement = contains(element[0], activeElement);
+            const activeElement = event.target;
+            const isSelectElement = contains(element[0], activeElement);
 
             if (isBlur && !isSelectElement) {
                 blurHandler();
             }
 
             if (isSelectElement && activeElement.nodeName !== 'INPUT') {
-                $timeout(function () {
+                $timeout(() => {
                     inputElement[0].focus();
                 });
             }
@@ -104,7 +106,7 @@ export default /* @ngInject */ function  ($document, $timeout) {
             element[0].removeEventListener('mousedown', mousedownHandler, true);
             element[0].removeEventListener('blur', blurHandler, true);
             inputElement.off('focus', focusHandler);
-        }
+        };
     }
 
     /**
@@ -115,17 +117,23 @@ export default /* @ngInject */ function  ($document, $timeout) {
      * @param {object} item
      */
     function scrollActiveOption(list, item) {
-        var y, height_menu, height_item, scroll, scroll_top, scroll_bottom;
+        let y;
+        let height_menu;
+        let height_item;
+        let scroll;
+        let scroll_top;
+        let
+            scroll_bottom;
 
         if (item) {
             height_menu = list.offsetHeight;
-            height_item = getWidthOrHeight(item, 'height', 'margin'); //outerHeight(true);
+            height_item = getWidthOrHeight(item, 'height', 'margin'); // outerHeight(true);
             scroll = list.scrollTop || 0;
             y = getOffset(item).top - getOffset(list).top + scroll;
             scroll_top = y;
             scroll_bottom = y - height_menu + height_item;
 
-            //TODO Make animation
+            // TODO Make animation
             if (y + height_item > height_menu + scroll) {
                 list.scrollTop = scroll_bottom;
             } else if (y < scroll) {
@@ -135,20 +143,20 @@ export default /* @ngInject */ function  ($document, $timeout) {
     }
 
     // Used for matching numbers
-    var core_pnum = /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source;
-    var rnumnonpx = new RegExp("^(" + core_pnum + ")(?!px)[a-z%]+$", "i");
+    const core_pnum = /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source;
+    const rnumnonpx = new RegExp(`^(${core_pnum})(?!px)[a-z%]+$`, 'i');
 
     function augmentWidthOrHeight(elem, name, extra, isBorderBox, styles) {
-        var i = extra === (isBorderBox ? 'border' : 'content') ?
+        let i = extra === (isBorderBox ? 'border' : 'content')
             // If we already have the right measurement, avoid augmentation
-            4 :
+            ? 4
             // Otherwise initialize for horizontal or vertical properties
-            name === 'width' ? 1 : 0,
+            : name === 'width' ? 1 : 0;
 
-            val = 0,
-            cssExpand = ['Top', 'Right', 'Bottom', 'Left'];
+        let val = 0;
+        const cssExpand = ['Top', 'Right', 'Bottom', 'Left'];
 
-        //TODO Use angular.element.css instead of getStyleValue after https://github.com/caitp/angular.js/commit/92bbb5e225253ebddd38ef5735d66ffef76b6a14 will be applied
+        // TODO Use angular.element.css instead of getStyleValue after https://github.com/caitp/angular.js/commit/92bbb5e225253ebddd38ef5735d66ffef76b6a14 will be applied
         function getStyleValue(name) {
             return parseFloat(styles[name]);
         }
@@ -162,19 +170,19 @@ export default /* @ngInject */ function  ($document, $timeout) {
             if (isBorderBox) {
                 // border-box includes padding, so remove it if we want content
                 if (extra === 'content') {
-                    val -= getStyleValue('padding' + cssExpand[i]);
+                    val -= getStyleValue(`padding${cssExpand[i]}`);
                 }
 
                 // at this point, extra isn't border nor margin, so remove border
                 if (extra !== 'margin') {
-                    val -= getStyleValue('border' + cssExpand[i] + 'Width');
+                    val -= getStyleValue(`border${cssExpand[i]}Width`);
                 }
             } else {
-                val += getStyleValue('padding' + cssExpand[i]);
+                val += getStyleValue(`padding${cssExpand[i]}`);
 
                 // at this point, extra isn't content nor padding, so add border
                 if (extra !== 'padding') {
-                    val += getStyleValue('border' + cssExpand[i] + 'Width');
+                    val += getStyleValue(`border${cssExpand[i]}Width`);
                 }
             }
         }
@@ -183,9 +191,10 @@ export default /* @ngInject */ function  ($document, $timeout) {
     }
 
     function getOffset(elem) {
-        var docElem, win,
-            box = elem.getBoundingClientRect(),
-            doc = elem && elem.ownerDocument;
+        let docElem;
+        let win;
+        const box = elem.getBoundingClientRect();
+        const doc = elem && elem.ownerDocument;
 
         if (!doc) {
             return;
@@ -196,7 +205,7 @@ export default /* @ngInject */ function  ($document, $timeout) {
 
         return {
             top: box.top + win.pageYOffset - docElem.clientTop,
-            left: box.left + win.pageXOffset - docElem.clientLeft
+            left: box.left + win.pageXOffset - docElem.clientLeft,
         };
     }
 
@@ -205,14 +214,13 @@ export default /* @ngInject */ function  ($document, $timeout) {
     }
 
     function getWidthOrHeight(elem, name, extra) {
-
         // Start with offset property, which is equivalent to the border-box value
-        var valueIsBorderBox = true,
-            val = name === 'width' ? elem.offsetWidth : elem.offsetHeight,
-            styles = window.getComputedStyle(elem, null),
+        const valueIsBorderBox = true;
+        let val = name === 'width' ? elem.offsetWidth : elem.offsetHeight;
+        const styles = window.getComputedStyle(elem, null);
 
-            //TODO Make isBorderBox after https://github.com/caitp/angular.js/commit/92bbb5e225253ebddd38ef5735d66ffef76b6a14 will be applied
-            isBorderBox = false; //jQuery.support.boxSizing && jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
+        // TODO Make isBorderBox after https://github.com/caitp/angular.js/commit/92bbb5e225253ebddd38ef5735d66ffef76b6a14 will be applied
+        const isBorderBox = false; // jQuery.support.boxSizing && jQuery.css( elem, "boxSizing", false, styles ) === "border-box";
 
         // some non-html elements return undefined for offsetWidth, so check for null/undefined
         // svg - https://bugzilla.mozilla.org/show_bug.cgi?id=649285
@@ -232,18 +240,18 @@ export default /* @ngInject */ function  ($document, $timeout) {
 
             // we need the check for style in case a browser which returns unreliable values
             // for getComputedStyle silently falls back to the reliable elem.style
-            //valueIsBorderBox = isBorderBox && ( jQuery.support.boxSizingReliable || val === elem.style[ name ] );
+            // valueIsBorderBox = isBorderBox && ( jQuery.support.boxSizingReliable || val === elem.style[ name ] );
 
             // Normalize "", auto, and prepare for extra
             val = parseFloat(val) || 0;
         }
 
         // use the active box-sizing model to add/subtract irrelevant styles
-        return val + augmentWidthOrHeight(elem, name, extra || (isBorderBox ? "border" : "content"), valueIsBorderBox, styles);
+        return val + augmentWidthOrHeight(elem, name, extra || (isBorderBox ? 'border' : 'content'), valueIsBorderBox, styles);
     }
 
     function groupsIsEmpty(groups) {
-        for (var k in groups) {
+        for (const k in groups) {
             if (groups.hasOwnProperty(k) && groups[k].length) {
                 return false;
             }
@@ -251,9 +259,14 @@ export default /* @ngInject */ function  ($document, $timeout) {
         return true;
     }
 
-    //lodash _.intersection + filter + invert
+    // lodash _.intersection + filter + invert
     function intersection(xArr, yArr, xFilter, yFilter, invert) {
-        var i, j, n, filteredX, filteredY, out = invert ? [].concat(xArr) : [];
+        let i;
+        let j;
+        let n;
+        let filteredX;
+        let filteredY;
+        const out = invert ? [].concat(xArr) : [];
 
         for (i = 0, n = xArr.length; i < xArr.length; i++) {
             filteredX = xFilter ? xFilter(xArr[i]) : xArr[i];
@@ -271,22 +284,20 @@ export default /* @ngInject */ function  ($document, $timeout) {
     }
 
     function getValue(valueName, item, scope, getter) {
-        var locals = {};
+        const locals = {};
 
-        //'name.subname' -> {name: {subname: item}} -> locals'
-        valueName.split('.').reduce(function (previousValue, currentItem, index, arr) {
-            return previousValue[currentItem] = index < arr.length - 1 ? {} : item;
-        }, locals);
+        // 'name.subname' -> {name: {subname: item}} -> locals'
+        valueName.split('.').reduce((previousValue, currentItem, index, arr) => previousValue[currentItem] = index < arr.length - 1 ? {} : item, locals);
 
         return getter(scope, locals);
     }
 
     return {
-        contains: contains,
-        bindFocusBlur: bindFocusBlur,
-        scrollActiveOption: scrollActiveOption,
-        groupsIsEmpty: groupsIsEmpty,
-        getValue: getValue,
-        intersection: intersection
-    }
+        contains,
+        bindFocusBlur,
+        scrollActiveOption,
+        groupsIsEmpty,
+        getValue,
+        intersection,
+    };
 }

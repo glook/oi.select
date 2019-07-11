@@ -1,25 +1,33 @@
 <div
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-haspopup="true"
+        class="oi-select__container"
         ng-class="{
      'oi-select_multiple': vm.multiple,
      'oi-select_single': !vm.multiple,
      'oi-select_open': vm.isOpen,
      'oi-select_focused': vm.focused,
      }"
+        ng-keydown="vm.onKeyDown($event)"
+        ng-keyup="vm.onKeyUp($event)"
+        role="combobox"
 >
     <div class="oi-select__field">
         <oi-select-field
                 backspace-focus="vm.backspaceFocus"
+                change-edit-mode="vm.setEditMode(value)"
+                change-focused="vm.setFocused(value)"
                 edit-mode="vm.editMode"
                 element="vm.element"
                 model-params="vm.modelParams"
                 multiple="vm.multiple"
                 old-query="vm.oldQuery"
                 on-change="vm.onChangeQuery()"
-                on-key-down="vm.onKeyDown(event)"
-                on-key-up="vm.onKeyUp(event)"
                 on-remove="vm.removeItem(index)"
                 placeholder="vm.placeholderValue"
                 query="vm.query"
+                read-only="vm.readonly"
                 select-options="vm.selectOptions"
                 show-loader="vm.showLoader"
                 value="vm.value"
@@ -27,15 +35,19 @@
         </oi-select-field>
     </div>
 
-    <div class="oi-select__dropdown" ng-show="vm.isOpen">
+    <div ng-show="vm.isOpen" style="position: relative;">
         <oi-select-dropdown
                 element="vm.element"
+                fetch-matches="vm.fetchMatches(query,append)"
                 groups="vm.groups"
                 hovered-element="vm.selectorPosition"
+                load-more="vm.allowPagination"
+                loading="vm.showLoader"
                 model-params="vm.modelParams"
                 on-hover="vm.setItemSelection(index)"
                 on-select="vm.addItem(item)"
                 options="vm.options"
+                page="vm.page"
                 query="vm.oldQuery || vm.query"
                 select-options="vm.selectOptions"
         ></oi-select-dropdown>

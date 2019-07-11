@@ -4,11 +4,15 @@
 import BaseController from '../baseController';
 
 export default class controller extends BaseController {
-    constructor($parse, $filter, $element) {
-        super($parse, $filter, $element);
-        this.focused = false;
+    constructor($parse, $filter, $element, $scope) {
+        super($parse, $filter, $element, $scope);
     }
 
+    $onInit = () => {
+        this.getInput().then((input) => {
+            input.addEventListener('focus', () => this.changeFocused({value: true}));
+        });
+    };
 
     $onChanges = (currentValue) => {
         const {
@@ -18,10 +22,6 @@ export default class controller extends BaseController {
         } = currentValue;
         if (modelParams || selectOptions) {
             this.registerFilters();
-        }
-
-        if (editMode && editMode.currentValue) {
-            this.focusOnInput();
         }
     };
 
@@ -53,8 +53,6 @@ export default class controller extends BaseController {
                 this.newItemFn = (scope, locals) => newItemModelFn(locals) || locals.query;
             }
         }
-
-        console.log({itemLabel});
         this.itemLabelFn = this._$parse(itemLabel);
     };
 
@@ -90,7 +88,17 @@ export default class controller extends BaseController {
         return getter(scope, locals);
     };
 
-    focusOnInput = () => {
-        this.element.querySelector('input').focus();
-    };
+    getInput = () => new Promise(resolve => setTimeout(() => resolve(this.element.querySelector('input')), 100));
+
+    get queryInputWidth() {
+        return this.query.length === 0
+            ? '5px'
+            : `${this.query.length * 13}px`;
+    }
+
+    get maxLength() {
+        return this.readOnly
+            ? 0
+            : this.selectOptions.maxlength;
+    }
 }

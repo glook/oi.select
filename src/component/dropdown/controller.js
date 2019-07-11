@@ -4,19 +4,28 @@
 import BaseController from '../baseController';
 
 export default class controller extends BaseController {
-    constructor($parse, $filter) {
-        super($parse, $filter);
+    constructor($parse, $filter, $element) {
+        super($parse, $filter, $element);
+        this.lastRequestCount = -1;
     }
 
     $onChanges = (currentValue) => {
         const {
             modelParams,
             selectOptions,
+            page,
         } = currentValue;
 
         if (modelParams || selectOptions) {
             this.registerFilters();
         }
+        if (page && page.currentValue === 0) {
+            this.lastRequestCount = this.groups.collection.length - 1;
+        }
+    };
+
+    $onInit = () => {
+        this._$element[0].querySelector('.oi-select__dropdown').addEventListener('scroll', this.onScroll);
     };
 
     registerFilters = () => {
@@ -77,5 +86,29 @@ export default class controller extends BaseController {
             previousValue[currentItem] = index < arr.length - 1 ? {} : item;
         }, locals);
         return getter(scope, locals);
+    };
+
+    onScroll = (event) => {
+        const {
+            target: {
+                scrollTop,
+                clientHeight,
+                scrollHeight,
+            },
+        } = event;
+        const {
+            query,
+            loadMore,
+        } = this;
+        if (loadMore) {
+            const threshold = 30;
+            if ((scrollTop + threshold + clientHeight) >= scrollHeight) {
+                if (this.lastRequestCount !== 0) {
+                    this.fetchMatches({query, append: true}).then((itemsCount) => {
+                        this.lastRequestCount = itemsCount;
+                    });
+                }
+            }
+        }
     };
 }

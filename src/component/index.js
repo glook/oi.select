@@ -3,6 +3,7 @@
  */
 import template from './template.html';
 import controller from './controller';
+import './style.scss';
 
 export default {
     controllerAs: 'vm',

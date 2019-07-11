@@ -1,35 +1,104 @@
-<ul class="oi-select__items"
-    ng-class="{'oi-select__items_empty':!vm.value.length,'oi-select__items_loading':vm.showLoader}">
-    <li
-            class="oi-select__item oi-select__item_selection"
-            ng-class="{focused: vm.backspaceFocus && $last}"
-            ng-click="vm.onRemove({index: $index})"
-            ng-hide="vm.editMode && !vm.multiple"
-            ng-repeat="item in vm.value track by $index"
-    >
-            <span
-                    class="oi-select__label"
-                    ng-bind-html="vm.getSearchLabel(item)"
-            ></span>
-    </li>
-    <li
-            class="oi-select__item oi-select__input"
-            ng-class="{'oi-select__item_hide': !vm.editMode}"
+<div class="oi-select-field oi-select-field--multiple"
+     ng-if="vm.multiple">
+    <div>
+        <div class="oi-select-placeholder"
+             ng-bind="vm.placeholder"
+             ng-class="{
+                        'oi-select-placeholder--fade': vm.editMode && vm.query.length === 0,
+                        'oi-select-placeholder--hidden': vm.query.length > 0,
+                     }"
+             ng-show="vm.value.length === 0"
+             unselectable="on"
+        ></div>
+        <ul>
+            <li class="oi-select-choice"
+                ng-repeat="item in vm.value track by $index"
+                ng-show="vm.value.length > 0"
+                unselectable="on">
+                <div class="oi-select-choice__content" ng-bind-html="vm.getSearchLabel(item)"></div>
+                <div class="oi-select-cross" ng-click="vm.onRemove({index: $index})">
+                    <svg fill="currentColor" height="10"
+                         viewBox="0 0 10 10" width="10" xmlns="http://www.w3.org/2000/svg">
+                        <path d="m9.85636364.8569697-.8569697-.8569697-4.07121212 4.07121212-4.07121212-4.07121212-.8569697.8569697 4.07121212 4.07121212-4.07121212 4.07121212.8569697.8569697 4.07121212-4.07121212 4.07121212 4.07121212.8569697-.8569697-4.07121212-4.07121212z"/>
+                    </svg>
+                </div>
+            </li>
+            <li class="oi-select-input">
+                <input
+                        autocomplete="off"
+                        class="oi-select-input__field"
+                        maxlength="{{vm.maxLength}}"
+                        ng-change="vm.onChange()"
+                        ng-class="{'oi-select-input--read':vm.readOnly}"
+                        ng-model="vm.query"
+                        ng-style="{'width': vm.queryInputWidth}"
+                />
+            </li>
+        </ul>
+    </div>
+    <div class="oi-select-arrow" ng-show="!vm.showLoader">
+        <svg class="oi-select-arrow__icon" fill="currentColor" height="7" viewBox="0 0 13 7"
+             width="13"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="m11.9534092.20023454c-.1653921-.16539208-.4341542-.16539208-.5995463 0l-5.27187254 5.28220953-5.28220954-5.28220953c-.16539208-.16539208-.4341542-.16539208-.59954628 0-.16539208.16539208-.16539208.4341542 0 .59954628l5.57164567 5.57164567c.08269604.08269604.18606609.12404406.29977314.12404406.10337005 0 .21707711-.04134802.29977314-.12404406l5.57164571-5.57164567c.1757291-.16539208.1757291-.4341542.010337-.59954628z"/>
+        </svg>
+    </div>
+    <div class="oi-select-loader" ng-show="vm.showLoader">
+        <svg aria-hidden="true" class="oi-select-loader__icon" fill="currentColor" focusable="false"
+             height="20px"
+             viewBox="0 0 1024 1024" width="20px">
+            <path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 0 0-94.3-139.9 437.71 437.71 0 0 0-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path>
+        </svg>
+    </div>
+</div>
 
-    >
-        <input
-                autocomplete="off"
-                class="oi-select__input_element"
-                maxlength="{{vm.selectOptions.maxlength}}"
-                ng-change="vm.onChange()"
-                ng-keydown="vm.onKeyDown({event: $event})"
-                ng-keyup="vm.onKeyUp({event: $event})"
-                ng-model="vm.query"
-                placeholder="{{vm.placeholder}}"/>
-    </li>
-    <li
-            class="oi-select__item oi-select__loader"
-            ng-show="vm.showLoader"
-    >
-    </li>
-</ul>
+
+<div class="oi-select-field oi-select-field--single"
+     ng-click="vm.onRemove({index:0})"
+     ng-if="!vm.multiple">
+    <div>
+        <div class="oi-select-placeholder" ng-bind="vm.placeholder"
+             ng-class="{
+                'oi-select-placeholder--fade': vm.editMode && vm.query.length === 0,
+                'oi-select-placeholder--hidden': vm.editMode && vm.query.length > 0,
+             }"
+             ng-show="vm.value.length === 0"
+             unselectable="on"
+        ></div>
+        <div class="oi-select-value"
+             ng-class="{
+                'oi-select-value--fade': vm.editMode && vm.query.length === 0,
+                'oi-select-value--hidden': vm.editMode && vm.query.length > 0,
+             }"
+             ng-repeat="item in vm.value track by $index"
+             ng-show="vm.value.length > 0"
+             unselectable="on">
+            <div ng-bind-html="vm.getSearchLabel(item)"></div>
+        </div>
+        <div class="oi-select-input">
+            <input
+                    autocomplete="off"
+                    class="oi-select-input__field"
+                    maxlength="{{vm.maxLength}}"
+                    ng-change="vm.onChange()"
+                    ng-class="{'oi-select-input--read':vm.readOnly}"
+                    ng-model="vm.query"
+            />
+        </div>
+    </div>
+    <div class="oi-select-arrow" ng-show="!vm.showLoader">
+        <svg class="oi-select-arrow__icon" fill="currentColor" height="7" viewBox="0 0 13 7"
+             width="13"
+             xmlns="http://www.w3.org/2000/svg">
+            <path d="m11.9534092.20023454c-.1653921-.16539208-.4341542-.16539208-.5995463 0l-5.27187254 5.28220953-5.28220954-5.28220953c-.16539208-.16539208-.4341542-.16539208-.59954628 0-.16539208.16539208-.16539208.4341542 0 .59954628l5.57164567 5.57164567c.08269604.08269604.18606609.12404406.29977314.12404406.10337005 0 .21707711-.04134802.29977314-.12404406l5.57164571-5.57164567c.1757291-.16539208.1757291-.4341542.010337-.59954628z"/>
+        </svg>
+    </div>
+
+    <div class="oi-select-loader" ng-show="vm.showLoader">
+        <svg aria-hidden="true" class="oi-select-loader__icon" fill="currentColor" focusable="false"
+             height="20px"
+             viewBox="0 0 1024 1024" width="20px">
+            <path d="M988 548c-19.9 0-36-16.1-36-36 0-59.4-11.6-117-34.6-171.3a440.45 440.45 0 0 0-94.3-139.9 437.71 437.71 0 0 0-139.9-94.3C629 83.6 571.4 72 512 72c-19.9 0-36-16.1-36-36s16.1-36 36-36c69.1 0 136.2 13.5 199.3 40.3C772.3 66 827 103 874 150c47 47 83.9 101.8 109.7 162.7 26.7 63.1 40.2 130.2 40.2 199.3.1 19.9-16 36-35.9 36z"></path>
+        </svg>
+    </div>
+</div>

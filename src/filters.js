@@ -7,15 +7,13 @@ export default angular.module('oi.select.filters', [])
 
     .filter('oiSelectCloseIcon', ['$sce', function ($sce) {
         return function (label) {
-            var closeIcon = '<span class="oi-select__remove">×</span>';
-
-            return $sce.trustAsHtml(label + closeIcon);
+            return $sce.trustAsHtml(label ? label.toString() : '');
         };
     }])
 
     .filter('oiSelectHighlight', ['$sce', 'oiSelectEscape', function ($sce, oiSelectEscape) {
         return function (label, query) {
-            var html;
+            let html;
 
             if (query.length > 0 || angular.isNumber(query)) {
                 label = label.toString();
@@ -32,7 +30,15 @@ export default angular.module('oi.select.filters', [])
 
     .filter('oiSelectAscSort', ['oiSelectEscape', function (oiSelectEscape) {
         function ascSort(input, query, getLabel, options) {
-            var i, j, isFound, output, output1 = [], output2 = [], output3 = [], output4 = [];
+            let i;
+            let j;
+            let isFound;
+            let output;
+            const output1 = [];
+            const output2 = [];
+            const output3 = [];
+            const
+                output4 = [];
 
             if (query) {
                 query = oiSelectEscape(query).toLocaleLowerCase();
@@ -53,7 +59,7 @@ export default angular.module('oi.select.filters', [])
                     }
                 }
                 for (i = 0; i < output1.length; i++) {
-                    if (getLabel(output1[i]).toLocaleLowerCase().match(new RegExp('^' + query))) {
+                    if (getLabel(output1[i]).toLocaleLowerCase().match(new RegExp(`^${query}`))) {
                         output2.push(output1[i]);
                     } else {
                         output3.push(output1[i]);
@@ -82,8 +88,6 @@ export default angular.module('oi.select.filters', [])
         return ascSort;
     }])
 
-    .filter('none', function () {
-        return function (input) {
-            return input;
-        };
+    .filter('none', () => function (input) {
+        return input;
     }).name;

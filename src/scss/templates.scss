@@ -63,14 +63,6 @@
   }
 
   &_single {
-    &#{$oi-select-open} {
-      #{$oi-select-field} {
-        &:after {
-          border-color: transparent transparent $oi-select-dropdown-arrow-color transparent !important;
-        }
-      }
-    }
-
     #{$oi-select-remove} {
       color: $oi-select-input-color;
       &:hover, &:focus {
@@ -80,13 +72,6 @@
 
     #{$oi-select-item-selection} {
       color: $oi-select-input-color;
-    }
-
-
-    #{$oi-select-field} {
-      &:after {
-        border-color: $oi-select-dropdown-arrow-color transparent transparent transparent;
-      }
     }
   }
 

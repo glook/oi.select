@@ -1,0 +1,220 @@
+.oi-select {
+  &-field {
+    position: relative;
+    display: block;
+    margin-right: 11px;
+    margin-left: 11px;
+    line-height: 30px;
+
+    &--single {
+      position: relative;
+      height: 34px;
+      cursor: pointer;
+    }
+
+    &--multiple {
+      position: relative;
+      height: 34px;
+      cursor: pointer;
+
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+
+        li {
+          height: 28px;
+          margin-top: 3px;
+          line-height: 26px;
+        }
+      }
+
+      .oi-select-input {
+        position: static;
+        float: left;
+        width: auto;
+        max-width: 100%;
+        padding: 0;
+
+        &__field {
+          width: 100%;
+          height: 100%;
+          font-size: 100%;
+          line-height: 1;
+          background: transparent;
+          border-width: 0;
+          border-radius: 4px;
+          outline: 0;
+          max-width: 100%;
+        }
+      }
+    }
+  }
+
+  &-placeholder {
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    left: 0;
+    max-width: 100%;
+    height: 20px;
+    margin-top: -10px;
+    overflow: hidden;
+    color: #bfbfbf;
+    line-height: 20px;
+    white-space: nowrap;
+    text-align: left;
+    text-overflow: ellipsis;
+    user-select: none;
+    transition: opacity 0.4s;
+
+    &--fade {
+      opacity: 0.4;
+    }
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &-loader {
+    display: inline-block;
+    color: inherit;
+    font-style: normal;
+    text-align: center;
+    text-transform: none;
+    vertical-align: -0.125em;
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    top: 50%;
+    right: -3px;
+    margin-top: -10px;
+    font-size: 12px;
+    line-height: 1;
+    transform-origin: 50% 50%;
+    transition: transform .3s, -webkit-transform .3s;
+
+    &__icon {
+      animation: oi-select-loader 1s infinite linear;
+      color: black;
+    }
+  }
+
+  &-arrow {
+    display: inline-block;
+    color: inherit;
+    font-style: normal;
+    text-align: center;
+    text-transform: none;
+    vertical-align: -0.125em;
+    text-rendering: optimizeLegibility;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -6px;
+    font-size: 12px;
+    line-height: 1;
+    transform-origin: 50% 50%;
+    transition: transform .3s, -webkit-transform .3s;
+  }
+
+  &-input {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+
+    &__field {
+      padding: 0;
+      outline: 0;
+      border: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: #737373;
+    }
+
+    &--read {
+      width: 1px;
+      height: 1px;
+      position: absolute;
+      left: -999px;
+    }
+  }
+
+
+  &-cross {
+    font-style: normal;
+    text-align: center;
+    text-transform: none;
+    vertical-align: -0.125em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: absolute;
+    right: 6px;
+    top: 0;
+    font-weight: bold;
+    line-height: inherit;
+    cursor: pointer;
+    -webkit-transition: all .3s;
+    transition: all .3s;
+    display: inline-block;
+    color: red;
+  }
+
+  &-choice {
+    position: relative;
+    float: left;
+    max-width: 99%;
+    margin-right: 4px;
+    padding: 0 25px 0 10px;
+    overflow: hidden;
+    color: rgba(0, 0, 0, 0.65);
+    background-color: #fafafa;
+    border: 1px solid #e8e8e8;
+    border-radius: 2px;
+    cursor: default;
+
+    &__content {
+      display: inline-block;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &-value {
+    float: left;
+    max-width: 100%;
+    padding-right: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: opacity 0.4s;
+    line-height: 34px;
+
+    &--fade {
+      opacity: 0.4;
+    }
+
+    &--hidden {
+      display: none;
+    }
+  }
+
+  &_open {
+    .oi-select-arrow {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+@keyframes oi-select-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

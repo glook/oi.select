@@ -1,7 +1,7 @@
 /**
  * Created by: Andrey Polyakov (andrey@polyakov.im)
  */
-import {throttle as _throttle, debounce as _debounce} from 'throttle-debounce';
+import {debounce as _debounce} from 'throttle-debounce';
 import mergeFn from 'deepmerge';
 import {
     NG_OPTIONS_REGEXP,
@@ -104,8 +104,23 @@ export default class Controller extends BaseController {
         this._$scope.$watch(() => this.ngModel, () => this.setValue());
     };
 
-    $onChanges = () => {
-        console.log('change');
+    $onChanges = (currentValue) => {
+        const {
+            oiSelectOptions,
+            oiOptions,
+        } = currentValue;
+
+        if (oiSelectOptions || oiOptions) {
+            this._selectOptions = null;
+            this._modelParams = null;
+
+            this.initEvents();
+            this.registerFilters();
+            this.registerOiOptionsAttributeElements();
+            this.debouncedMatches = _debounce(this.selectOptions.debounce, (query = '', append = false, selectedAs = null) => this.fetchMatches(query, append, selectedAs));
+            this.editItemIsCorrected = this.selectOptions.editItem === 'correct';
+        }
+        console.log({currentValue});
     };
 
     isValidOptionsRegexp = (input) => {
@@ -298,7 +313,7 @@ export default class Controller extends BaseController {
     get selectOptions() {
         if (!this._selectOptions) {
             const {
-                oiSelectOptions,
+                oiSelectOptions = {},
                 _oiSelect: {
                     options,
                 },
@@ -367,18 +382,17 @@ export default class Controller extends BaseController {
             multiple,
             matchesWereReset,
             dropdownElement,
+            readonly,
         } = this;
-
+        if (readonly) {
+            this.query = '';
+            return false;
+        }
         if (query.length < minlength) return false;
-        console.log('on change');
-        console.log(query !== oldQuery && (!oldQuery || query) && !matchesWereReset);
 
-        console.log({query});
         if (query !== oldQuery && (!oldQuery || query) && !matchesWereReset) {
             dropdownElement.scrollTop = 0;
             if (query) {
-                console.log('sss');
-
                 this.debouncedMatches(query);
                 this.oldQuery = null;
             } else if (multiple) {
@@ -525,7 +539,7 @@ export default class Controller extends BaseController {
     };
 
 
-    __getValueWithCallback = (item, callbackFn, scope = this) => this.getValue(this.oiOptionsAttribute.valueName, item, scope, callbackFn);
+    __getValueWithCallback = (item, callbackFn, scope = this) => this.getValue(this.modelParams.valueName, item, scope, callbackFn);
 
     getItemName = item => this.__getValueWithCallback(item, this.itemNameFn);
 
@@ -557,22 +571,34 @@ export default class Controller extends BaseController {
 
 
     fetchMatches = (query = '', append = false, selectedAs = null) => {
+
         const {
             valuesFn,
             parentScope,
             setMatches,
         } = this;
+        if (append) {
+            this.page += 1;
+        }
         this.showLoader = true;
         this.isEmptyList = false;
         this.oldQuery = null;
-        return valuesFn(parentScope, {
+        this.$apply();
+
+
+        const valuesRequest = valuesFn(parentScope, {
             $query: query,
             $selectedAs: selectedAs,
             $page: this.page,
-        }).then(values => setMatches(values, append).then((result) => {
-            this.showLoader = false;
-            this.$apply();
-        }));
+        });
+
+
+        return this._$q.when(valuesRequest.$promise || valuesRequest)
+            .then(values => setMatches(values, append).then((result) => {
+                this.showLoader = false;
+                this.$apply();
+                return result;
+            }));
     };
 
     /**
@@ -606,9 +632,9 @@ export default class Controller extends BaseController {
                 this.groups.matches = groupedMatches;
                 this.groups.collection = filteredMatches;
             }
-            return new Promise(resolve => resolve(true));
+            return new Promise(resolve => resolve(values.length));
         }
-        return new Promise(resolve => resolve(false));
+        return new Promise(resolve => resolve(0));
     };
 
     /**
@@ -681,6 +707,9 @@ export default class Controller extends BaseController {
             if (!this.saveOn(SAVE_ON_BLUR)) {
                 this.resetMatches({cleanQuery: !keepQuery});
             }
+            this.editMode = false;
+            this.page = 0;
+
             this.$apply();
         }
     };
@@ -697,20 +726,19 @@ export default class Controller extends BaseController {
             isOpen,
             fetchMatches,
             element,
-            editMode,
-            removeItem,
-            resetMatches,
-            editItemIsCorrected,
             multipleLimit,
             value,
+            editItem,
+            editItemIsCorrected,
         } = this;
 
         const {
             closeList,
             minlength,
-            editItem,
         } = this.selectOptions;
-        console.log({target});
+
+
+        this.editMode = true;
         this.focused = true;
         // query length less then minlength
         if (query.length < minlength) return false;
@@ -720,16 +748,12 @@ export default class Controller extends BaseController {
         // limit is reached
         if (value.length >= multipleLimit && this._oiUtils.contains(element, target, 'select-dropdown')) return false;
 
-        if (!editMode) {
-            removeItem(0); // because click on border (not on chosen item) doesn't remove chosen element
-        }
-
         if (isOpen && closeList && (nodeName !== 'INPUT' || !query.length)) {
-            resetMatches({cleanQuery: editItem && !editItemIsCorrected});
-            this.$apply();
         } else {
             fetchMatches(query);
         }
+
+        this.element.querySelector('input').focus();
 
         this.$apply();
         return true;
@@ -741,6 +765,16 @@ export default class Controller extends BaseController {
 
     resetInput = () => {
         this.editMode = !this.exists(this.ngModel);
+    };
+
+    setEditMode = (value) => {
+        this.editMode = value;
+        // if (value) {
+        //     if (this.editItem && this.editItemIsCorrected) {
+        //         console.log('cal;;');
+        //         this.removedItem = this.query;
+        //     }
+        // }
     };
 
     resetMatches = (options = {}) => {
@@ -798,15 +832,14 @@ export default class Controller extends BaseController {
 
         // Если кол-во элементов больше чем указано в multipleLimit, пропускаем
         if (multipleLimit && value.length >= multipleLimit) {
-            console.warn('limit');
+            this.blinkElement('oi-select_limited', 500);
             return false;
         }
         const optionGroupName = getGroupName(option);
         const optionGroup = matches[optionGroupName] || [];
         const optionValue = itemNameFn ? this.getItemName(option) : option;
-
         optionGroup.splice(optionGroup.indexOf(option), 1);
-        console.log({optionGroup});
+
         if (multiple) {
             const {
                 ngModel,
@@ -847,43 +880,56 @@ export default class Controller extends BaseController {
             resetMatches,
             removeItemFn,
             editMode,
+            ngDisabled,
         } = this;
 
+        if (ngDisabled || (multiple && index < 0)) return false;
+
         this.removedItem = multiple ? ngModel[index] : ngModel;
-        removeItemFn(this.parentScope, {$item: this.removedItem});
 
-        if (!multiple && editMode) return false;
+        console.log('ss');
 
-        if (this.multiple) {
-            const newValue = [
-                ...value.slice(0, index),
-                ...value.slice(index + 1),
-            ];
-            this.value = newValue;
-            this.ngModel = newValue;
-        } else {
-            this.clearInputField();
-            if (cleanModel) {
-                this.ngModel = undefined;
-            }
-        }
+        return this._$q
+            .when(removeItemFn(this.parentScope, {$item: this.removedItem}))
+            .then(() => {
+                if (!multiple && editMode) return false;
 
-        if (multiple || !backspaceFocus) {
-            const {
-                removedItem,
-                getItemLabel,
-                editItemIsCorrected,
-                element,
-            } = this;
-            this.query = editItemFn(removedItem, oldQuery, getItemLabel, editItemIsCorrected, element) || '';
-        }
+                if (this.multiple) {
+                    const newValue = [
+                        ...value.slice(0, index),
+                        ...value.slice(index + 1),
+                    ];
+                    this.value = newValue;
+                    this.ngModel = newValue;
+                } else {
+                    this.clearInputField();
+                    if (cleanModel) {
+                        this.ngModel = undefined;
+                    }
+                }
 
-        if (multiple && closeList) {
-            resetMatches();
-        }
+                if (multiple || !backspaceFocus) {
+                    const {
+                        removedItem,
+                        getItemLabel,
+                        editItemIsCorrected,
+                        element,
+                        readonly,
+                    } = this;
+                    if (readonly) {
+                        this.query = '';
+                    } else {
+                        this.query = editItemFn(removedItem, oldQuery, getItemLabel, editItemIsCorrected, element) || '';
+                    }
+                }
 
-        this.$apply();
-        return true;
+                if (multiple && closeList) {
+                    resetMatches();
+                }
+
+                this.$apply();
+                return true;
+            });
     };
 
     /**
@@ -950,15 +996,21 @@ export default class Controller extends BaseController {
             },
             newItemFn,
         } = this;
-        console.log({triggerName});
+
         const item = collection[selectorPosition] || false;
         const isNewItem = newItem && query;
         const isItemDisabled = !!getItemDisabled(item);
         if (isAvailableSaveTrigger(triggerName) && (isNewItem || (item && !isItemDisabled))) {
             this.selectorPosition = null;
-            if (newItemFn && isNewItem) {
-                const newItemValue = newItemFn(this.parentScope, {$query: query});
-                this.addItem(newItemValue);
+            if (!item && isNewItem && !selectorPosition) {
+                if (newItemFn) {
+                    const newItemValue = newItemFn(this.parentScope, {$query: query});
+                    this.addItem(newItemValue);
+                } else {
+                    this.addItem(query);
+
+                }
+
             } else {
                 this.addItem(item);
             }
@@ -1013,7 +1065,7 @@ export default class Controller extends BaseController {
             multiple,
         } = this;
         // @TODO Добавить логику если модель не пуста
-        if (multiple) return multiplePlaceholder;
+        if (multiple) return placeholder;
 
         return placeholder;
     }
@@ -1033,5 +1085,17 @@ export default class Controller extends BaseController {
         return editItem === true || editItem === 'correct'
             ? 'oiSelectEditItem'
             : editItem;
+    }
+
+    setFocused = (value) => {
+        this.focused = value;
+    };
+
+
+    blinkElement(className, delay = 50) {
+        this.element.classList.add(className);
+        setTimeout(() => {
+            this.element.classList.remove(className);
+        }, delay);
     }
 }

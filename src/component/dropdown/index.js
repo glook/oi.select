@@ -14,8 +14,12 @@ export default {
         element: '<',
         groups: '<',
         query: '<',
-        hoveredElement: '<',
+        hoveredElement: '=',
         modelParams: '<',
         selectOptions: '<',
+        loading: '<',
+        fetchMatches: '&',
+        page: '<',
+        loadMore: '<',
     },
 };

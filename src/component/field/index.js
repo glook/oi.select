@@ -3,6 +3,7 @@
  */
 import template from './template.html';
 import controller from './controller';
+import './style.scss';
 
 export default {
     controllerAs: 'vm',
@@ -22,8 +23,9 @@ export default {
         multiple: '<',
         placeholder: '<',
         onChange: '&',
-        onKeyDown: '&',
-        onKeyUp: '&',
         backspaceFocus: '<',
+        changeEditMode: '&',
+        changeFocused: '&',
+        readOnly: '<',
     },
 };

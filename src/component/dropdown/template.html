@@ -1,21 +1,26 @@
-<ul
-        class="oi-select__optgroup"
-        ng-init="groupPosition = $index;"
-        ng-repeat="(group, options) in vm.groups.matches"
->
-    <li
-            class="oi-select__optgroup_header"
-            ng-bind-html="vm.getGroupLabel(group, options)"
-            ng-if="group && options.length"
-    ></li>
-    <li
-            class="oi-select__option"
-            ng-bind-html="vm.getDropdownLabel(option)"
-            ng-class="{'active': vm.hoveredElement === vm.groups.groupsLength[group] + $index, 'disabled': isDisabled, 'ungroup': !group}"
-            ng-click="isDisabled || vm.onSelect({item:option})"
-            ng-init="isDisabled = vm.getItemDisabled(option)"
-            ng-mouseenter="vm.onHover({index: vm.groups.groupsLength[group] + $index})"
-            ng-repeat="option in options"
+<div class="oi-select__dropdown" style="width: 100%;">
+    <ul
+            class="oi-select__optgroup"
+            ng-init="groupPosition = $index;"
+            ng-repeat="(group, options) in vm.groups.matches"
     >
-    </li>
-</ul>
+        <li
+                class="oi-select__optgroup_header"
+                ng-bind-html="vm.getGroupLabel(group, options)"
+                ng-if="group && options.length"
+        ></li>
+        <li
+                class="oi-select__option"
+                ng-bind-html="vm.getDropdownLabel(option)"
+                ng-class="{'active': vm.hoveredElement === vm.groups.groupsLength[group] + $index, 'disabled': isDisabled, 'ungroup': !group}"
+                ng-click="isDisabled || vm.onSelect({item:option})"
+                ng-init="isDisabled = vm.getItemDisabled(option)"
+                ng-mouseenter="vm.onHover({index: vm.groups.groupsLength[group] + $index})"
+                ng-repeat="option in options"
+        >
+        </li>
+    </ul>
+<!--    <div ng-if="vm.loading" style="pointer-events:none;padding: 5px 10px;-->
+<!--    background: rgba(66, 139, 202, 0.2);">...-->
+<!--    </div>-->
+</div>
